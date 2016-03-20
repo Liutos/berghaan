@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "base/string.h"
+
 typedef enum {
     TOKEN_END,
     TOKEN_ID,
@@ -11,8 +13,9 @@ typedef enum {
 } TOKEN_T;
 
 typedef struct {
-    char *string;
+    char *code;
     int index;
+    string_t *token;
 } lexer_t;
 
 extern lexer_t *lexer_new(const char *string);
