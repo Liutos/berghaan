@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "ast.h"
 #include "lexer.h"
 
 typedef struct {
@@ -10,4 +11,4 @@ typedef struct {
 } parser_t;
 
 extern parser_t *parser_new(lexer_t *lexer);
-extern void program(parser_t *parser);
+extern ast_t *program(parser_t *parser);

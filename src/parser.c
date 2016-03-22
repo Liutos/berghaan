@@ -1,3 +1,4 @@
+#include "ast.h"
 #include "lexer.h"
 #include "parser.h"
 
@@ -5,57 +6,61 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void expr_list(parser_t *);
-static void expr(parser_t *);
-static void list(parser_t *);
+static ast_t *expr_list(parser_t *);
+static ast_t *expr(parser_t *);
+static ast_t *list(parser_t *);
 
-static void
+static char *
 parser_match(parser_t *parser, TOKEN_T type)
 {
     lexer_t *lexer = parser->lexer;
     TOKEN_T token = lexer_next(lexer);
-    if (token == type)
+    if (token == type) {
         printf("MATCH '%s'\n", lexer->token->data);
-    else {
+        return lexer->token->data;
+    } else {
         printf("DISMATCH '%s'\n", lexer->token->data);
         exit(EXIT_FAILURE);
     }
 }
 
-static void
+static ast_t *
 expr_list(parser_t *parser)
 {
     TOKEN_T token = lexer_peek(parser->lexer);
     if (token == TOKEN_ID
         || token == TOKEN_LP) {
-        expr(parser);
-        expr_list(parser);
+        ast_t *e = expr(parser);
+        ast_t *el = expr_list(parser);
+        return ast_cons_new(e, el);
     } else if (token == TOKEN_RP
                || token == TOKEN_END)
-        return;
+        return NULL;
     else
         exit(EXIT_FAILURE);
 }
 
-static void
+static ast_t *
 expr(parser_t *parser)
 {
     TOKEN_T token = lexer_peek(parser->lexer);
-    if (token == TOKEN_ID)
-        parser_match(parser, TOKEN_ID);
-    else if (token == TOKEN_LP)
-        list(parser);
+    if (token == TOKEN_ID) {
+        char *name = parser_match(parser, TOKEN_ID);
+        return ast_id_new(name);
+    } else if (token == TOKEN_LP)
+        return list(parser);
     else
         exit(EXIT_FAILURE);
 }
 
-static void
+static ast_t *
 list(parser_t *parser)
 {
     parser_match(parser, TOKEN_LP);
-    expr(parser);
-    expr_list(parser);
+    ast_t *e = expr(parser);
+    ast_t *el = expr_list(parser);
     parser_match(parser, TOKEN_RP);
+    return ast_cons_new(e, el);
 }
 
 parser_t *
@@ -66,14 +71,14 @@ parser_new(lexer_t *lexer)
     return parser;
 }
 
-void
+ast_t *
 program(parser_t *parser)
 {
     TOKEN_T token = lexer_peek(parser->lexer);
     if (token == TOKEN_ID
         || token == TOKEN_LP
         || token == TOKEN_END)
-        expr_list(parser);
+        return expr_list(parser);
     else
         exit(EXIT_FAILURE);
 }
