@@ -12,5 +12,8 @@ main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
     parser_t *parser = parser_new(lexer);
     ast_t *prog = program(parser);
     ast_print(prog, stdout);
+    printf("\n");
+    ast_dfs(prog);
+    printf("\n");
     return 0;
 }

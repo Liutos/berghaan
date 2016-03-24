@@ -6,6 +6,15 @@
 #include <string.h>
 
 static void
+ast_cons_dfs(ast_t *cons)
+{
+    assert(cons->type == AST_CONS);
+    ast_dfs(AST_CONS_CAR(cons));
+    if (AST_CONS_CDR(cons) != NULL)
+        ast_dfs(AST_CONS_CDR(cons));
+}
+
+static void
 ast_cons_print(ast_t *cons, FILE *out)
 {
     assert(cons->type == AST_CONS);
@@ -20,10 +29,24 @@ ast_cons_print(ast_t *cons, FILE *out)
 }
 
 static void
+ast_id_dfs(ast_t *id)
+{
+    assert(id->type == AST_ID);
+    printf("%s", AST_ID_NAME(id));
+}
+
+static void
 ast_id_print(ast_t *id, FILE *out)
 {
     assert(id->type == AST_ID);
     fprintf(out, "%s", AST_ID_NAME(id));
+}
+
+static void
+ast_int_dfs(ast_t *n)
+{
+    assert(n->type == AST_INT);
+    printf("%d", AST_INT_VALUE(n));
 }
 
 static void
@@ -59,6 +82,22 @@ ast_int_new(int value)
     n->type = AST_INT;
     AST_INT_VALUE(n) = value;
     return n;
+}
+
+void
+ast_dfs(ast_t *x)
+{
+    switch (x->type) {
+        case AST_CONS:
+            ast_cons_dfs(x);
+            break;
+        case AST_ID:
+            ast_id_dfs(x);
+            break;
+        case AST_INT:
+            ast_int_dfs(x);
+            break;
+    }
 }
 
 void

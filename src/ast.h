@@ -31,4 +31,5 @@ typedef struct _ast_t {
 extern ast_t *ast_cons_new(ast_t *, ast_t *);
 extern ast_t *ast_id_new(const char *);
 extern ast_t *ast_int_new(int);
+extern void ast_dfs(ast_t *);
 extern void ast_print(ast_t *, FILE *);
