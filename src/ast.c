@@ -26,6 +26,13 @@ ast_id_print(ast_t *id, FILE *out)
     fprintf(out, "%s", AST_ID_NAME(id));
 }
 
+static void
+ast_int_print(ast_t *n, FILE *out)
+{
+    assert(n->type == AST_INT);
+    fprintf(out, "%d", AST_INT_VALUE(n));
+}
+
 ast_t *
 ast_cons_new(ast_t *car, ast_t *cdr)
 {
@@ -45,6 +52,15 @@ ast_id_new(const char *name)
     return id;
 }
 
+ast_t *
+ast_int_new(int value)
+{
+    ast_t *n = calloc(1, sizeof(ast_t));
+    n->type = AST_INT;
+    AST_INT_VALUE(n) = value;
+    return n;
+}
+
 void
 ast_print(ast_t *x, FILE *out)
 {
@@ -54,6 +70,9 @@ ast_print(ast_t *x, FILE *out)
             break;
         case AST_ID:
             ast_id_print(x, out);
+            break;
+        case AST_INT:
+            ast_int_print(x, out);
             break;
     }
 }

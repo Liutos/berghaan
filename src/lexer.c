@@ -17,6 +17,16 @@ is_end(char c)
     return c == '\0';
 }
 
+static bool
+is_integer(char *s)
+{
+    for (int i = 0; s[i] != '\0'; i++) {
+        if (!isdigit(s[i]))
+            return false;
+    }
+    return true;
+}
+
 static TOKEN_T
 lexer_next_id(lexer_t *lexer)
 {
@@ -26,6 +36,8 @@ lexer_next_id(lexer_t *lexer)
         lexer->index += 1;
         c = lexer->code[lexer->index];
     }
+    if (is_integer(lexer->token->data))
+        return TOKEN_INT;
     return TOKEN_ID;
 }
 

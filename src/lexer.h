@@ -8,6 +8,7 @@
 typedef enum {
     TOKEN_END,
     TOKEN_ID,
+    TOKEN_INT,
     TOKEN_LP,
     TOKEN_RP,
 } TOKEN_T;

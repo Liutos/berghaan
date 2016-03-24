@@ -8,12 +8,14 @@
 typedef enum {
     AST_CONS,
     AST_ID,
+    AST_INT,
 } AST_TYPE_T;
 
 typedef struct _ast_t {
     AST_TYPE_T type;
     union {
         char *id;
+        int integer;
         struct {
             struct _ast_t *car;
             struct _ast_t *cdr;
@@ -24,7 +26,9 @@ typedef struct _ast_t {
 #define AST_CONS_CAR(x) ((x)->u.cons.car)
 #define AST_CONS_CDR(x) ((x)->u.cons.cdr)
 #define AST_ID_NAME(x) ((x)->u.id)
+#define AST_INT_VALUE(x) ((x)->u.integer)
 
 extern ast_t *ast_cons_new(ast_t *, ast_t *);
 extern ast_t *ast_id_new(const char *);
+extern ast_t *ast_int_new(int);
 extern void ast_print(ast_t *, FILE *);

@@ -3,12 +3,19 @@
 #include "parser.h"
 
 #include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 static ast_t *expr_list(parser_t *);
 static ast_t *expr(parser_t *);
 static ast_t *list(parser_t *);
+
+static bool
+is_atom(TOKEN_T token)
+{
+    return token == TOKEN_ID || token == TOKEN_INT;
+}
 
 static char *
 parser_match(parser_t *parser, TOKEN_T type)
@@ -28,7 +35,7 @@ static ast_t *
 expr_list(parser_t *parser)
 {
     TOKEN_T token = lexer_peek(parser->lexer);
-    if (token == TOKEN_ID
+    if (is_atom(token)
         || token == TOKEN_LP) {
         ast_t *e = expr(parser);
         ast_t *el = expr_list(parser);
@@ -47,6 +54,10 @@ expr(parser_t *parser)
     if (token == TOKEN_ID) {
         char *name = parser_match(parser, TOKEN_ID);
         return ast_id_new(name);
+    } else if (token == TOKEN_INT) {
+        char *n = parser_match(parser, TOKEN_INT);
+        int value = atoi(n);
+        return ast_int_new(value);
     } else if (token == TOKEN_LP)
         return list(parser);
     else
@@ -75,7 +86,7 @@ ast_t *
 program(parser_t *parser)
 {
     TOKEN_T token = lexer_peek(parser->lexer);
-    if (token == TOKEN_ID
+    if (is_atom(token)
         || token == TOKEN_LP
         || token == TOKEN_END)
         return expr_list(parser);
