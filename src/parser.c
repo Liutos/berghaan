@@ -71,7 +71,7 @@ list(parser_t *parser)
     ast_t *e = expr(parser);
     ast_t *el = expr_list(parser);
     parser_match(parser, TOKEN_RP);
-    return ast_cons_new(e, el);
+    return ast_call_new(e, el);
 }
 
 parser_t *

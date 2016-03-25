@@ -6,6 +6,28 @@
 #include <string.h>
 
 static void
+ast_call_dfs(ast_t *call)
+{
+    assert(call->type == AST_CALL);
+    ast_dfs(AST_CALL_OPERATOR(call));
+    if (AST_CALL_ARGS(call) != NULL)
+        ast_dfs(AST_CALL_ARGS(call));
+}
+
+static void
+ast_call_print(ast_t *call, FILE *out)
+{
+    assert(call->type == AST_CALL);
+    fprintf(out, "(");
+    ast_print(AST_CALL_OPERATOR(call), out);
+    if (AST_CALL_ARGS(call) != NULL) {
+        fprintf(out, " . ");
+        ast_print(AST_CALL_ARGS(call), out);
+    }
+    fprintf(out, ")");
+}
+
+static void
 ast_cons_dfs(ast_t *cons)
 {
     assert(cons->type == AST_CONS);
@@ -57,6 +79,16 @@ ast_int_print(ast_t *n, FILE *out)
 }
 
 ast_t *
+ast_call_new(ast_t *operator, ast_t *args)
+{
+    ast_t *call = calloc(1, sizeof(ast_t));
+    call->type = AST_CALL;
+    AST_CALL_OPERATOR(call) = operator;
+    AST_CALL_ARGS(call) = args;
+    return call;
+}
+
+ast_t *
 ast_cons_new(ast_t *car, ast_t *cdr)
 {
     ast_t *cons = calloc(1, sizeof(ast_t));
@@ -88,6 +120,9 @@ void
 ast_dfs(ast_t *x)
 {
     switch (x->type) {
+        case AST_CALL:
+            ast_call_dfs(x);
+            break;
         case AST_CONS:
             ast_cons_dfs(x);
             break;
@@ -104,6 +139,9 @@ void
 ast_print(ast_t *x, FILE *out)
 {
     switch (x->type) {
+        case AST_CALL:
+            ast_call_print(x, out);
+            break;
         case AST_CONS:
             ast_cons_print(x, out);
             break;
