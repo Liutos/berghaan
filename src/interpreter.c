@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct _env_t {
     assoc_list_t *bindings;
@@ -42,6 +43,31 @@ env_reference(env_t *env, const char *variable)
 }
 
 static object_t *
+interpret_set(ast_t *x)
+{
+    int length = ast_cons_length(x);
+    assert(length == 2);
+    ast_t *variable = AST_CONS_1ST(x);
+    ast_t *expr = AST_CONS_2ND(x);
+    assert(variable->type == AST_ID);
+    object_t *value = interpret(expr);
+    env_bind(toplevel_env, AST_ID_NAME(variable), value);
+    return value;
+}
+
+static object_t *
+interpret_call(ast_t *x)
+{
+    assert(x->type == AST_CALL);
+    ast_t *operator = AST_CALL_OPERATOR(x);
+    assert(operator->type == AST_ID);
+    char *name = AST_ID_NAME(operator);
+    if (strcmp(name, "set") == 0)
+        return interpret_set(AST_CALL_ARGS(x));
+    exit(EXIT_FAILURE);
+}
+
+static object_t *
 interpret_cons(ast_t *x)
 {
     assert(x->type == AST_CONS);
@@ -71,6 +97,8 @@ object_t *
 interpret(ast_t *x)
 {
     switch (x->type) {
+        case AST_CALL:
+            return interpret_call(x);
         case AST_CONS:
             return interpret_cons(x);
         case AST_ID:
@@ -86,5 +114,4 @@ void
 interpreter_init(void)
 {
     toplevel_env = env_new();
-    env_bind(toplevel_env, "foobar", object_int_new(233));
 }

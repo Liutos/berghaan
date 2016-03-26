@@ -116,6 +116,18 @@ ast_int_new(int value)
     return n;
 }
 
+int
+ast_cons_length(ast_t *cons)
+{
+    assert(cons->type == AST_CONS);
+    int length = 0;
+    while (cons != NULL) {
+        length += 1;
+        cons = AST_CONS_CDR(cons);
+    }
+    return length;
+}
+
 void
 ast_dfs(ast_t *x)
 {

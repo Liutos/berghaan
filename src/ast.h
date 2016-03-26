@@ -30,6 +30,9 @@ typedef struct _ast_t {
 
 #define AST_CALL_OPERATOR(x) ((x)->u.call.operator)
 #define AST_CALL_ARGS(x) ((x)->u.call.args)
+#define AST_CONS_1ST(x) AST_CONS_CAR(x)
+#define AST_CONS_2ND(x) AST_CONS_CAR(AST_CONS_CDR(x))
+#define AST_CONS_3ND(x) AST_CONS_CAR(AST_CONS_CDR(AST_CONS_CDR(x)))
 #define AST_CONS_CAR(x) ((x)->u.cons.car)
 #define AST_CONS_CDR(x) ((x)->u.cons.cdr)
 #define AST_ID_NAME(x) ((x)->u.id)
@@ -39,5 +42,6 @@ extern ast_t *ast_call_new(ast_t *, ast_t *);
 extern ast_t *ast_cons_new(ast_t *, ast_t *);
 extern ast_t *ast_id_new(const char *);
 extern ast_t *ast_int_new(int);
+extern int ast_cons_length(ast_t *);
 extern void ast_dfs(ast_t *);
 extern void ast_print(ast_t *, FILE *);

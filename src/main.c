@@ -11,7 +11,7 @@ main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
     interpreter_init();
 
-    const char *code = "foobar";
+    const char *code = "(set foobar 233) foobar";
     lexer_t *lexer = lexer_new(code);
     parser_t *parser = parser_new(lexer);
     ast_t *prog = program(parser);
