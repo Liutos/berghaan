@@ -1,6 +1,7 @@
 bin_PROGRAMS = main
 main_SOURCES = \
     base/string.c \
+    base/list.c \
     ast.c \
     interpreter.c \
     lexer.c \

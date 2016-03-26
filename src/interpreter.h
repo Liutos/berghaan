@@ -6,4 +6,5 @@
 #include "ast.h"
 #include "object.h"
 
+extern void interpreter_init(void);
 extern object_t *interpret(ast_t *);

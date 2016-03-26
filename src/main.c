@@ -9,7 +9,9 @@
 int
 main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
-    const char *code = "233";
+    interpreter_init();
+
+    const char *code = "foobar";
     lexer_t *lexer = lexer_new(code);
     parser_t *parser = parser_new(lexer);
     ast_t *prog = program(parser);
