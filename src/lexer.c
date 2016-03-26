@@ -18,6 +18,14 @@ is_end(char c)
 }
 
 static bool
+is_bool(char *s)
+{
+    if (strcmp(s, "true") == 0 || strcmp(s, "false") == 0)
+        return true;
+    return false;
+}
+
+static bool
 is_integer(char *s)
 {
     for (int i = 0; s[i] != '\0'; i++) {
@@ -36,6 +44,8 @@ lexer_next_id(lexer_t *lexer)
         lexer->index += 1;
         c = lexer->code[lexer->index];
     }
+    if (is_bool(lexer->token->data))
+        return TOKEN_BOOL;
     if (is_integer(lexer->token->data))
         return TOKEN_INT;
     return TOKEN_ID;

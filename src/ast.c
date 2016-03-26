@@ -6,6 +6,20 @@
 #include <string.h>
 
 static void
+ast_bool_dfs(ast_t *b)
+{
+    assert(b->type == AST_BOOL);
+    printf("%s", b ? "true" : "false");
+}
+
+static void
+ast_bool_print(ast_t *b, FILE *out)
+{
+    assert(b->type == AST_BOOL);
+    fprintf(out, "%s", b ? "true" : "false");
+}
+
+static void
 ast_call_dfs(ast_t *call)
 {
     assert(call->type == AST_CALL);
@@ -79,6 +93,15 @@ ast_int_print(ast_t *n, FILE *out)
 }
 
 ast_t *
+ast_bool_new(bool value)
+{
+    ast_t *b = calloc(1, sizeof(ast_t));
+    b->type = AST_BOOL;
+    AST_BOOL_VALUE(b) = value;
+    return b;
+}
+
+ast_t *
 ast_call_new(ast_t *operator, ast_t *args)
 {
     ast_t *call = calloc(1, sizeof(ast_t));
@@ -132,6 +155,9 @@ void
 ast_dfs(ast_t *x)
 {
     switch (x->type) {
+        case AST_BOOL:
+            ast_bool_dfs(x);
+            break;
         case AST_CALL:
             ast_call_dfs(x);
             break;
@@ -151,6 +177,9 @@ void
 ast_print(ast_t *x, FILE *out)
 {
     switch (x->type) {
+        case AST_BOOL:
+            ast_bool_print(x, out);
+            break;
         case AST_CALL:
             ast_call_print(x, out);
             break;

@@ -6,6 +6,7 @@
 #include "base/string.h"
 
 typedef enum {
+    TOKEN_BOOL,
     TOKEN_END,
     TOKEN_ID,
     TOKEN_INT,

@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 static ast_t *expr_list(parser_t *);
 static ast_t *expr(parser_t *);
@@ -14,7 +15,7 @@ static ast_t *list(parser_t *);
 static bool
 is_atom(TOKEN_T token)
 {
-    return token == TOKEN_ID || token == TOKEN_INT;
+    return token == TOKEN_BOOL || token == TOKEN_ID || token == TOKEN_INT;
 }
 
 static char *
@@ -51,7 +52,10 @@ static ast_t *
 expr(parser_t *parser)
 {
     TOKEN_T token = lexer_peek(parser->lexer);
-    if (token == TOKEN_ID) {
+    if (token == TOKEN_BOOL) {
+        char *text = parser_match(parser, TOKEN_BOOL);
+        return ast_bool_new(strcmp(text, "true") == 0);
+    } if (token == TOKEN_ID) {
         char *name = parser_match(parser, TOKEN_ID);
         return ast_id_new(name);
     } else if (token == TOKEN_INT) {

@@ -43,6 +43,20 @@ env_reference(env_t *env, const char *variable)
 }
 
 static object_t *
+interpret_equal(ast_t *x)
+{
+    int length = ast_cons_length(x);
+    assert(length == 2);
+    ast_t *left = AST_CONS_1ST(x);
+    ast_t *right = AST_CONS_2ND(x);
+    object_t *lhs = interpret(left);
+    object_t *rhs = interpret(right);
+    assert(lhs->type == OBJECT_INT);
+    assert(rhs->type == OBJECT_INT);
+    return object_bool_new(OBJECT_INT_VALUE(lhs) == OBJECT_INT_VALUE(rhs));
+}
+
+static object_t *
 interpret_set(ast_t *x)
 {
     int length = ast_cons_length(x);
@@ -56,12 +70,21 @@ interpret_set(ast_t *x)
 }
 
 static object_t *
+interpret_bool(ast_t *x)
+{
+    assert(x->type == AST_BOOL);
+    return object_bool_new(AST_BOOL_VALUE(x));
+}
+
+static object_t *
 interpret_call(ast_t *x)
 {
     assert(x->type == AST_CALL);
     ast_t *operator = AST_CALL_OPERATOR(x);
     assert(operator->type == AST_ID);
     char *name = AST_ID_NAME(operator);
+    if (strcmp(name, "=") == 0)
+        return interpret_equal(AST_CALL_ARGS(x));
     if (strcmp(name, "set") == 0)
         return interpret_set(AST_CALL_ARGS(x));
     exit(EXIT_FAILURE);
@@ -97,6 +120,8 @@ object_t *
 interpret(ast_t *x)
 {
     switch (x->type) {
+        case AST_BOOL:
+            return interpret_bool(x);
         case AST_CALL:
             return interpret_call(x);
         case AST_CONS:

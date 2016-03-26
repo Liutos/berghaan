@@ -3,9 +3,11 @@
  */
 #pragma once
 
+#include <stdbool.h>
 #include <stdio.h>
 
 typedef enum {
+    AST_BOOL,
     AST_CALL,
     AST_CONS,
     AST_ID,
@@ -17,6 +19,7 @@ typedef struct _ast_t {
     union {
         char *id;
         int integer;
+        bool bool_value;
         struct {
             struct _ast_t *operator;
             struct _ast_t *args;
@@ -28,6 +31,7 @@ typedef struct _ast_t {
     } u;
 } ast_t;
 
+#define AST_BOOL_VALUE(x) ((x)->u.bool_value)
 #define AST_CALL_OPERATOR(x) ((x)->u.call.operator)
 #define AST_CALL_ARGS(x) ((x)->u.call.args)
 #define AST_CONS_1ST(x) AST_CONS_CAR(x)
@@ -38,6 +42,7 @@ typedef struct _ast_t {
 #define AST_ID_NAME(x) ((x)->u.id)
 #define AST_INT_VALUE(x) ((x)->u.integer)
 
+extern ast_t *ast_bool_new(bool);
 extern ast_t *ast_call_new(ast_t *, ast_t *);
 extern ast_t *ast_cons_new(ast_t *, ast_t *);
 extern ast_t *ast_id_new(const char *);
