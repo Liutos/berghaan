@@ -57,6 +57,23 @@ interpret_equal(ast_t *x)
 }
 
 static object_t *
+interpret_if(ast_t *x)
+{
+    int length = ast_cons_length(x);
+    assert(length == 3);
+    ast_t *predicate = AST_CONS_1ST(x);
+    ast_t *expr_then = AST_CONS_2ND(x);
+    ast_t *expr_else = AST_CONS_3ND(x);
+    object_t *result = interpret(predicate);
+    assert(result->type == OBJECT_BOOL);
+    if (OBJECT_BOOL_VALUE(result) == true) {
+        return interpret(expr_then);
+    } else {
+        return interpret(expr_else);
+    }
+}
+
+static object_t *
 interpret_set(ast_t *x)
 {
     int length = ast_cons_length(x);
@@ -85,6 +102,8 @@ interpret_call(ast_t *x)
     char *name = AST_ID_NAME(operator);
     if (strcmp(name, "=") == 0)
         return interpret_equal(AST_CALL_ARGS(x));
+    if (strcmp(name, "if") == 0)
+        return interpret_if(AST_CALL_ARGS(x));
     if (strcmp(name, "set") == 0)
         return interpret_set(AST_CALL_ARGS(x));
     exit(EXIT_FAILURE);
