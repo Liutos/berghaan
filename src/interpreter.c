@@ -52,7 +52,7 @@ env_reference(env_t *env, const char *variable)
 }
 
 static object_t *
-interpret_define(ast_t *x)
+interpret_defun(ast_t *x)
 {
     int length = ast_cons_length(x);
     assert(length >= 3);
@@ -141,8 +141,8 @@ interpret_call(ast_t *x, env_t *env)
     char *name = AST_ID_NAME(operator);
     if (strcmp(name, "=") == 0)
         return interpret_equal(AST_CALL_ARGS(x), env);
-    if (strcmp(name, "define") == 0)
-        return interpret_define(AST_CALL_ARGS(x));
+    if (strcmp(name, "defun") == 0)
+        return interpret_defun(AST_CALL_ARGS(x));
     if (strcmp(name, "if") == 0)
         return interpret_if(AST_CALL_ARGS(x), env);
     if (strcmp(name, "set") == 0)
