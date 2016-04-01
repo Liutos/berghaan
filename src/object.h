@@ -8,6 +8,7 @@
 typedef enum {
     OBJECT_BOOL,
     OBJECT_INT,
+    OBJECT_NIL,
 } OBJECT_T;
 
 typedef struct {
@@ -23,4 +24,5 @@ typedef struct {
 
 extern object_t *object_bool_new(bool);
 extern object_t *object_int_new(int);
+extern object_t *object_nil_new(void);
 extern void object_print(object_t *);

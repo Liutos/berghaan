@@ -18,6 +18,13 @@ object_int_print(object_t *n)
     printf("%d", OBJECT_INT_VALUE(n));
 }
 
+static void
+object_nil_print(object_t *n)
+{
+    assert(n->type == OBJECT_NIL);
+    printf("nil");
+}
+
 object_t *
 object_bool_new(bool value)
 {
@@ -36,6 +43,14 @@ object_int_new(int value)
     return n;
 }
 
+object_t *
+object_nil_new(void)
+{
+    object_t *n = calloc(1, sizeof(object_t));
+    n->type = OBJECT_NIL;
+    return n;
+}
+
 void
 object_print(object_t *x)
 {
@@ -45,6 +60,9 @@ object_print(object_t *x)
             break;
         case OBJECT_INT:
             object_int_print(x);
+            break;
+        case OBJECT_NIL:
+            object_nil_print(x);
             break;
     }
 }
