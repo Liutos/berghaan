@@ -3,6 +3,7 @@ main_SOURCES = \
     base/string.c \
     base/list.c \
     base/hash.c \
+    base/utils.c \
     ast.c \
     interpreter.c \
     lexer.c \

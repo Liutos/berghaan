@@ -2,6 +2,7 @@
 #include "interpreter.h"
 #include "base/hash.h"
 #include "base/list.h"
+#include "base/utils.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -139,13 +140,13 @@ interpret_call(ast_t *x, env_t *env)
     ast_t *operator = AST_CALL_OPERATOR(x);
     assert(operator->type == AST_ID);
     char *name = AST_ID_NAME(operator);
-    if (strcmp(name, "=") == 0)
+    if (utils_str_equal(name, "="))
         return interpret_equal(AST_CALL_ARGS(x), env);
-    if (strcmp(name, "defun") == 0)
+    if (utils_str_equal(name, "defun"))
         return interpret_defun(AST_CALL_ARGS(x));
-    if (strcmp(name, "if") == 0)
+    if (utils_str_equal(name, "if"))
         return interpret_if(AST_CALL_ARGS(x), env);
-    if (strcmp(name, "set") == 0)
+    if (utils_str_equal(name, "set"))
         return interpret_set(AST_CALL_ARGS(x), env);
     function_t *f = hash_table_get(toplevel_udf, name);
     if (f != NULL)
