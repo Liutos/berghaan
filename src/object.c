@@ -12,6 +12,13 @@ object_bool_print(object_t *b)
 }
 
 static void
+object_char_print(object_t *c)
+{
+    assert(c->type == OBJECT_CHAR);
+    printf("'%c'", OBJECT_CHAR_VALUE(c));
+}
+
+static void
 object_int_print(object_t *n)
 {
     assert(n->type == OBJECT_INT);
@@ -32,6 +39,15 @@ object_bool_new(bool value)
     b->type = OBJECT_BOOL;
     OBJECT_BOOL_VALUE(b) = value;
     return b;
+}
+
+object_t *
+object_char_new(uint32_t value)
+{
+    object_t *c = calloc(1, sizeof(object_t));
+    c->type = OBJECT_CHAR;
+    OBJECT_CHAR_VALUE(c) = value;
+    return c;
 }
 
 object_t *
@@ -57,6 +73,9 @@ object_print(object_t *x)
     switch (x->type) {
         case OBJECT_BOOL:
             object_bool_print(x);
+            break;
+        case OBJECT_CHAR:
+            object_char_print(x);
             break;
         case OBJECT_INT:
             object_int_print(x);

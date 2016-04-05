@@ -53,6 +53,17 @@ env_reference(env_t *env, const char *variable)
 }
 
 static object_t *
+interpret_code_char(ast_t *x, env_t *env)
+{
+    int length = ast_cons_length(x);
+    assert(length == 1);
+    ast_t *expr_n = AST_CONS_1ST(x);
+    object_t *n = interpret_any(expr_n, env);
+    uint32_t value = OBJECT_INT_VALUE(n);
+    return object_char_new(value);
+}
+
+static object_t *
 interpret_defun(ast_t *x)
 {
     int length = ast_cons_length(x);
@@ -142,6 +153,8 @@ interpret_call(ast_t *x, env_t *env)
     char *name = AST_ID_NAME(operator);
     if (utils_str_equal(name, "="))
         return interpret_equal(AST_CALL_ARGS(x), env);
+    if (utils_str_equal(name, "code-char"))
+        return interpret_code_char(AST_CALL_ARGS(x), env);
     if (utils_str_equal(name, "defun"))
         return interpret_defun(AST_CALL_ARGS(x));
     if (utils_str_equal(name, "if"))
