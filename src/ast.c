@@ -20,28 +20,6 @@ ast_bool_print(ast_t *b, FILE *out)
 }
 
 static void
-ast_call_dfs(ast_t *call)
-{
-    assert(call->type == AST_CALL);
-    ast_dfs(AST_CALL_OPERATOR(call));
-    if (AST_CALL_ARGS(call) != NULL)
-        ast_dfs(AST_CALL_ARGS(call));
-}
-
-static void
-ast_call_print(ast_t *call, FILE *out)
-{
-    assert(call->type == AST_CALL);
-    fprintf(out, "(");
-    ast_print(AST_CALL_OPERATOR(call), out);
-    if (AST_CALL_ARGS(call) != NULL) {
-        fprintf(out, " . ");
-        ast_print(AST_CALL_ARGS(call), out);
-    }
-    fprintf(out, ")");
-}
-
-static void
 ast_cons_dfs(ast_t *cons)
 {
     assert(cons->type == AST_CONS);
@@ -92,6 +70,20 @@ ast_int_print(ast_t *n, FILE *out)
     fprintf(out, "%d", AST_INT_VALUE(n));
 }
 
+static void
+ast_prog_dfs(ast_t *p)
+{
+    assert(p->type == AST_PROG);
+    ast_dfs(AST_PROG_EXPRS(p));
+}
+
+static void
+ast_prog_print(ast_t *p, FILE *out)
+{
+    assert(p->type == AST_PROG);
+    ast_print(AST_PROG_EXPRS(p), out);
+}
+
 ast_t *
 ast_bool_new(bool value)
 {
@@ -99,16 +91,6 @@ ast_bool_new(bool value)
     b->type = AST_BOOL;
     AST_BOOL_VALUE(b) = value;
     return b;
-}
-
-ast_t *
-ast_call_new(ast_t *operator, ast_t *args)
-{
-    ast_t *call = calloc(1, sizeof(ast_t));
-    call->type = AST_CALL;
-    AST_CALL_OPERATOR(call) = operator;
-    AST_CALL_ARGS(call) = args;
-    return call;
 }
 
 ast_t *
@@ -139,6 +121,15 @@ ast_int_new(int value)
     return n;
 }
 
+ast_t *
+ast_prog_new(ast_t *exprs)
+{
+    ast_t *p = calloc(1, sizeof(ast_t));
+    p->type = AST_PROG;
+    AST_PROG_EXPRS(p) = exprs;
+    return p;
+}
+
 int
 ast_cons_length(ast_t *cons)
 {
@@ -158,9 +149,6 @@ ast_dfs(ast_t *x)
         case AST_BOOL:
             ast_bool_dfs(x);
             break;
-        case AST_CALL:
-            ast_call_dfs(x);
-            break;
         case AST_CONS:
             ast_cons_dfs(x);
             break;
@@ -169,6 +157,9 @@ ast_dfs(ast_t *x)
             break;
         case AST_INT:
             ast_int_dfs(x);
+            break;
+        case AST_PROG:
+            ast_prog_dfs(x);
             break;
     }
 }
@@ -180,9 +171,6 @@ ast_print(ast_t *x, FILE *out)
         case AST_BOOL:
             ast_bool_print(x, out);
             break;
-        case AST_CALL:
-            ast_call_print(x, out);
-            break;
         case AST_CONS:
             ast_cons_print(x, out);
             break;
@@ -191,6 +179,9 @@ ast_print(ast_t *x, FILE *out)
             break;
         case AST_INT:
             ast_int_print(x, out);
+            break;
+        case AST_PROG:
+            ast_prog_print(x, out);
             break;
     }
 }
