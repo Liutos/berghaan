@@ -10,4 +10,4 @@ main_SOURCES = \
     main.c \
     object.c \
     parser.c
-main_CFLAGS = -Wall -Wextra -g -march=native -pedantic -std=gnu99
+main_CFLAGS = -Wall -Wextra -g -march=native -std=gnu99

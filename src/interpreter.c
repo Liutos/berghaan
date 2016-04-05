@@ -9,15 +9,36 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef object_t *(*native_0_t)(void);
+
 typedef struct _env_t {
     assoc_list_t *bindings;
     struct _env_t *outer;
 } env_t;
 
+typedef enum {
+    FUNCTION_NATIVE,
+    FUNCTION_UDF,
+} FUNCTION_T;
+
 typedef struct {
-    ast_t *arguments;
-    ast_t *body;
+    FUNCTION_T type;
+    union {
+        struct {
+            int arity;
+            void *impl;
+        } native;
+        struct {
+            ast_t *arguments;
+            ast_t *body;
+        } udf;
+    } u;
 } function_t;
+
+#define FUNCTION_NATIVE_ARITY(x) ((x)->u.native.arity)
+#define FUNCTION_NATIVE_IMPL(x) ((x)->u.native.impl)
+#define FUNCTION_UDF_ARGUMENTS(x) ((x)->u.udf.arguments)
+#define FUNCTION_UDF_BODY(x) ((x)->u.udf.body)
 
 static env_t *toplevel_env = NULL;
 static hash_table_t *toplevel_udf = NULL;
@@ -75,8 +96,9 @@ interpret_defun(ast_t *x)
     ast_t *body = AST_CONS_CDR(AST_CONS_CDR(x));
     assert(body->type == AST_CONS);
     function_t *f = calloc(1, sizeof(function_t));
-    f->arguments = args;
-    f->body = body;
+    f->type = FUNCTION_UDF;
+    FUNCTION_UDF_ARGUMENTS(f) = args;
+    FUNCTION_UDF_BODY(f) = body;
     hash_table_set(toplevel_udf, AST_ID_NAME(name), f);
     return object_nil_new();
 }
@@ -113,6 +135,20 @@ interpret_if(ast_t *x, env_t *env)
 }
 
 static object_t *
+interpret_native(function_t *f, ast_t *x __attribute__ ((unused)), env_t *env __attribute__ ((unused)))
+{
+    object_t *value = NULL;
+    switch (FUNCTION_NATIVE_ARITY(f)) {
+        case 0:
+            value = ((native_0_t)FUNCTION_NATIVE_IMPL(f))();
+            break;
+        default :
+            exit(EXIT_FAILURE);
+    }
+    return value;
+}
+
+static object_t *
 interpret_sequence(ast_t *x, env_t *env)
 {
     assert(x->type == AST_CONS);
@@ -140,11 +176,11 @@ interpret_set(ast_t *x, env_t *env)
 static object_t *
 interpret_udf(function_t *f, ast_t *x, env_t *env)
 {
-    int arity = ast_cons_length(f->arguments);
+    ast_t *args = FUNCTION_UDF_ARGUMENTS(f);
+    int arity = ast_cons_length(args);
     int length = ast_cons_length(x);
     assert(length == arity);
     env_t *e = env_new(toplevel_env);
-    ast_t *args = f->arguments;
     while (args != NULL) {
         ast_t *expr = AST_CONS_1ST(x);
         object_t *v = interpret_any(expr, env);
@@ -154,7 +190,7 @@ interpret_udf(function_t *f, ast_t *x, env_t *env)
         args = AST_CONS_CDR(args);
         x = AST_CONS_CDR(x);
     }
-    object_t *result = interpret_sequence(f->body, e);
+    object_t *result = interpret_sequence(FUNCTION_UDF_BODY(f), e);
     return result;
 }
 
@@ -183,7 +219,11 @@ interpret_cons(ast_t *x, env_t *env)
     if (utils_str_equal(name, "set"))
         return interpret_set(AST_CONS_CDR(x), env);
     function_t *f = hash_table_get(toplevel_udf, name);
-    if (f != NULL)
+    if (f == NULL)
+        exit(EXIT_FAILURE);
+    if (f->type == FUNCTION_NATIVE)
+        return interpret_native(f, AST_CONS_CDR(x), env);
+    if (f->type == FUNCTION_UDF)
         return interpret_udf(f, AST_CONS_CDR(x), env);
     exit(EXIT_FAILURE);
 }
@@ -230,6 +270,13 @@ interpret_any(ast_t *x, env_t *env)
     }
 }
 
+static object_t *
+native_yes(void)
+{
+    puts("yes");
+    return object_nil_new();
+}
+
 object_t *
 interpret(ast_t *x)
 {
@@ -241,4 +288,9 @@ interpreter_init(void)
 {
     toplevel_env = env_new(NULL);
     toplevel_udf = hash_table_new();
+    function_t *f = calloc(1, sizeof(function_t));
+    f->type = FUNCTION_NATIVE;
+    FUNCTION_NATIVE_ARITY(f) = 0;
+    FUNCTION_NATIVE_IMPL(f) = (void *)native_yes;
+    hash_table_set(toplevel_udf, "yes", f);
 }
