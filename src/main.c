@@ -1,8 +1,10 @@
 #include "ast.h"
+#include "compiler.h"
 #include "interpreter.h"
 #include "lexer.h"
 #include "parser.h"
 #include "object.h"
+#include "vm.h"
 
 #include <stdio.h>
 
@@ -22,5 +24,16 @@ main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
     object_t *obj = interpret(prog);
     object_print(obj);
     printf("\n");
+
+    code = "233 666";
+    lexer = lexer_new(code);
+    parser = parser_new(lexer);
+    prog = program(parser);
+    ast_print(prog, stdout);
+    puts("");
+    compiler_t *c = compiler_new();
+    compiler_compile(c, prog);
+    vm_t *vm = vm_new();
+    vm_execute(vm, c->code);
     return 0;
 }
