@@ -4,8 +4,10 @@
 #pragma once
 
 #include "base/vector.h"
+#include "env.h"
 
 typedef struct {
+    env_t *env;
     vector_t *data_stack;
 } vm_t;
 

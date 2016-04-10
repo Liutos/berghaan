@@ -3,6 +3,7 @@
 #include "base/hash.h"
 #include "base/list.h"
 #include "base/utils.h"
+#include "env.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -10,11 +11,6 @@
 #include <string.h>
 
 typedef object_t *(*native_0_t)(void);
-
-typedef struct _env_t {
-    assoc_list_t *bindings;
-    struct _env_t *outer;
-} env_t;
 
 typedef enum {
     FUNCTION_NATIVE,
@@ -44,34 +40,6 @@ static env_t *toplevel_env = NULL;
 static hash_table_t *toplevel_udf = NULL;
 
 static object_t *interpret_any(ast_t *, env_t *);
-
-static env_t *
-env_new(env_t *outer)
-{
-    env_t *env = calloc(1, sizeof(env_t));
-    env->bindings = assoc_list_new();
-    env->outer = outer;
-    return env;
-}
-
-static env_t *
-env_bind(env_t *env, const char *variable, object_t *value)
-{
-    env->bindings = assoc_list_push(env->bindings, variable, value);
-    return env;
-}
-
-static object_t *
-env_reference(env_t *env, const char *variable)
-{
-    while (env != NULL) {
-        object_t *value = assoc_list_search(env->bindings, variable);
-        if (value != NULL)
-            return value;
-        env = env->outer;
-    }
-    return NULL;
-}
 
 static object_t *
 interpret_code_char(ast_t *x, env_t *env)

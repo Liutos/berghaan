@@ -25,10 +25,18 @@ vm_last_data(vm_t *vm)
     return (object_t *)vector_back(vm->data_stack);
 }
 
+static object_t *
+vm_reference(vm_t *vm, int x, int y)
+{
+    return (object_t *)env_at(vm->env, x, y);
+}
+
 vm_t *
 vm_new(void)
 {
     vm_t *vm = calloc(1, sizeof(vm_t));
+    vm->env = env_new(NULL);
+    env_bind(vm->env, "foobaz", object_int_new(666));
     vm->data_stack = vector_new();
     return vm;
 }
@@ -58,6 +66,11 @@ vm_execute(vm_t *vm, vector_t *code)
                 break;
             case OP_PUSH:
                 vm_push_data(vm, (object_t *)OP_PUSH_TARGET(op));
+                pc++;
+                break;
+            case OP_REF:
+                obj = vm_reference(vm, OP_REF_X(op), OP_REF_Y(op));
+                vm_push_data(vm, obj);
                 pc++;
                 break;
         }

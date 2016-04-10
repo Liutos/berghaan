@@ -1,6 +1,7 @@
 #include "ast.h"
 #include "base/vector.h"
 #include "compiler.h"
+#include "env.h"
 #include "object.h"
 #include "op.h"
 
@@ -9,10 +10,22 @@
 
 static void compiler_compile_any(compiler_t *, ast_t *);
 
+static env_t *toplevel_env = NULL;
+
 static void
 compiler_emit(compiler_t *c, op_t *op)
 {
     vector_push_back(c->code, op);
+}
+
+static void
+compiler_compile_id(compiler_t *c, ast_t *id)
+{
+    assert(id->type == AST_ID);
+    int x, y;
+    bool is_found = env_position(toplevel_env, AST_ID_NAME(id), &x, &y);
+    assert(is_found == true);
+    compiler_emit(c, OP_NEW2(OP_REF, x, y));
 }
 
 static void
@@ -34,6 +47,9 @@ static void
 compiler_compile_any(compiler_t *c, ast_t *x)
 {
     switch (x->type) {
+        case AST_ID:
+            compiler_compile_id(c, x);
+            break;
         case AST_INT:
             compiler_emit(c, OP_NEW1(OP_PUSH, object_int_new(AST_INT_VALUE(x))));
             break;
@@ -58,4 +74,11 @@ compiler_compile(compiler_t *c, ast_t *prog)
 {
     assert(prog->type == AST_PROG);
     compiler_compile_any(c, prog);
+}
+
+void
+compiler_init(void)
+{
+    toplevel_env = env_new(NULL);
+    env_bind(toplevel_env, "foobaz", NULL);
 }

@@ -7,6 +7,7 @@ main_SOURCES = \
     base/vector.c \
     ast.c \
     compiler.c \
+    env.c \
     interpreter.c \
     lexer.c \
     main.c \

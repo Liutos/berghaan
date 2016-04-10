@@ -12,3 +12,4 @@ typedef struct {
 
 extern compiler_t *compiler_new(void);
 extern void compiler_compile(compiler_t *, ast_t *);
+extern void compiler_init(void);

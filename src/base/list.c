@@ -23,6 +23,17 @@ assoc_list_push(assoc_list_t *lst, const char *key, void *value)
 }
 
 void *
+assoc_list_at(assoc_list_t *lst, int index)
+{
+    assoc_node_t *node = lst->first;
+    while (index > 0 && node != NULL) {
+        index--;
+        node = node->next;
+    }
+    return node->value;
+}
+
+void *
 assoc_list_search(assoc_list_t *lst, const char *key)
 {
     assoc_node_t *node = lst->first;
@@ -32,4 +43,18 @@ assoc_list_search(assoc_list_t *lst, const char *key)
         node = node->next;
     }
     return NULL;
+}
+
+int
+assoc_list_position(assoc_list_t *lst, const char *key)
+{
+    int index = 0;
+    assoc_node_t *node = lst->first;
+    while (node != NULL) {
+        if (strcmp(node->key, key) == 0)
+            return index;
+        node = node->next;
+        index++;
+    }
+    return -1;
 }
