@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 typedef enum {
+    OP_GSET,
     OP_HALT,
     OP_POP,
     OP_PRINT,
@@ -28,6 +29,7 @@ extern op_t *op_new2(OP_T, intptr_t, intptr_t);
 #define OP_NEW2(t, a0, a1) op_new2(t, (intptr_t)a0, (intptr_t)a1)
 #define OP_ARG0(x) ((x)->arg0)
 #define OP_ARG1(x) ((x)->arg1)
+#define OP_GSET_NAME(x) ((char *)OP_ARG0(x))
 #define OP_PUSH_TARGET(x) OP_ARG0(x)
 #define OP_REF_X(x) OP_ARG0(x)
 #define OP_REF_Y(x) OP_ARG1(x)

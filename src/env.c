@@ -37,6 +37,13 @@ env_bind(env_t *env, const char *variable, object_t *value)
     return env;
 }
 
+env_t *
+env_push_back(env_t *env, const char *var, object_t *val)
+{
+    env->bindings = assoc_list_push_back(env->bindings, var, val);
+    return env;
+}
+
 object_t *
 env_at(env_t *env, int x, int y)
 {

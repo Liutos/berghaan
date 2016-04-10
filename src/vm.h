@@ -13,3 +13,4 @@ typedef struct {
 
 extern vm_t *vm_new(void);
 extern void vm_execute(vm_t *, vector_t *);
+extern void vm_init(void);

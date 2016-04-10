@@ -1,4 +1,5 @@
 #include "ast.h"
+#include "base/utils.h"
 #include "base/vector.h"
 #include "compiler.h"
 #include "env.h"
@@ -16,6 +17,30 @@ static void
 compiler_emit(compiler_t *c, op_t *op)
 {
     vector_push_back(c->code, op);
+}
+
+static void
+compile_set(compiler_t *c, ast_t *args)
+{
+    assert(args->type == AST_CONS);
+    ast_t *var = AST_CONS_1ST(args);
+    ast_t *expr = AST_CONS_2ND(args);
+    compiler_compile_any(c, expr);
+    char *name = AST_ID_NAME(var);
+    env_push_back(toplevel_env, name, NULL);
+    compiler_emit(c, OP_NEW1(OP_GSET, name));
+}
+
+static void
+compiler_compile_cons(compiler_t *c, ast_t *x)
+{
+    assert(x->type == AST_CONS);
+    ast_t *op = AST_CONS_CAR(x);
+    assert(op->type == AST_ID);
+    char *name = AST_ID_NAME(op);
+    if (utils_str_equal(name, "set")) {
+        compile_set(c, AST_CONS_CDR(x));
+    }
 }
 
 static void
@@ -47,6 +72,9 @@ static void
 compiler_compile_any(compiler_t *c, ast_t *x)
 {
     switch (x->type) {
+        case AST_CONS:
+            compiler_compile_cons(c, x);
+            break;
         case AST_ID:
             compiler_compile_id(c, x);
             break;
@@ -80,5 +108,4 @@ void
 compiler_init(void)
 {
     toplevel_env = env_new(NULL);
-    env_bind(toplevel_env, "foobaz", NULL);
 }

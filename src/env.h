@@ -16,5 +16,6 @@ typedef struct _env_t {
 extern bool env_position(env_t *, const char *, int *, int *);
 extern env_t *env_new(env_t *);
 extern env_t *env_bind(env_t *, const char *, object_t *);
+extern env_t *env_push_back(env_t *, const char *, object_t *);
 extern object_t *env_at(env_t *, int, int);
 extern object_t *env_reference(env_t *, const char *);

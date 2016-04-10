@@ -25,7 +25,7 @@ main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
     object_print(obj);
     printf("\n");
 
-    code = "233 foobaz";
+    code = "(set foobaz 233) foobaz";
     lexer = lexer_new(code);
     parser = parser_new(lexer);
     prog = program(parser);
@@ -34,6 +34,7 @@ main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
     compiler_init();
     compiler_t *c = compiler_new();
     compiler_compile(c, prog);
+    vm_init();
     vm_t *vm = vm_new();
     vm_execute(vm, c->code);
     return 0;

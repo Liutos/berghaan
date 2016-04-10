@@ -22,6 +22,23 @@ assoc_list_push(assoc_list_t *lst, const char *key, void *value)
     return lst;
 }
 
+assoc_list_t *
+assoc_list_push_back(assoc_list_t *lst, const char *key, void *val)
+{
+    assoc_node_t *node = lst->first;
+    if (node == NULL) {
+        return assoc_list_push(lst, key, val);
+    }
+    while (node->next != NULL)
+        node = node->next;
+    assoc_node_t *n = calloc(1, sizeof(assoc_node_t));
+    n->key = strdup(key);
+    n->value = val;
+    n->next = NULL;
+    node->next = n;
+    return lst;
+}
+
 void *
 assoc_list_at(assoc_list_t *lst, int index)
 {
