@@ -25,17 +25,14 @@ main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
     object_print(obj);
     printf("\n");
 
-    code = "(set foobaz 233) foobaz";
+    code = "(defun foo (x) x) (foo 233)";
     lexer = lexer_new(code);
     parser = parser_new(lexer);
     prog = program(parser);
     ast_print(prog, stdout);
     puts("");
     compiler_init();
-    compiler_t *c = compiler_new();
-    compiler_compile(c, prog);
-    vm_init();
-    vm_t *vm = vm_new();
-    vm_execute(vm, c->code);
+    compiler_compile(prog);
+    compiler_done();
     return 0;
 }
