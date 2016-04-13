@@ -64,6 +64,24 @@ compile_defun(code_t *s, ast_t *args, env_t *env)
     emit(s, OP_NEW1(OP_GSET, name));
     emit(s, OP_NEW0(OP_POP));
     emit(s, OP_NEW0(OP_NIL));
+    // 扩展编译器的环境
+    env_bind(env, name, NULL);
+}
+
+static void
+compile_funcall(code_t *s, ast_t *x, env_t *env)
+{
+    ast_t *fun = AST_CONS_CAR(x);
+    ast_t *args = AST_CONS_CDR(x);
+    // 编译实参列表
+    while (args != NULL) {
+        ast_t *expr = AST_CONS_CAR(args);
+        compiler_compile_any(s, expr, env);
+        args = AST_CONS_CDR(args);
+    }
+    // 编译函数
+    compiler_compile_any(s, fun, env);
+    emit(s, OP_NEW0(OP_CALL));
 }
 
 static void
@@ -89,6 +107,8 @@ compiler_compile_cons(code_t *s, ast_t *x, env_t *env)
         compile_set(s, AST_CONS_CDR(x), env);
     } else if (utils_str_equal(name, "defun")) {
         compile_defun(s, AST_CONS_CDR(x), env);
+    } else {
+        compile_funcall(s, x, env);
     }
 }
 

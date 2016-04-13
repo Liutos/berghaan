@@ -8,6 +8,7 @@
 
 #define IDENTITY(x) x
 #define OPS(op) op(OP_ARG), \
+    op(OP_CALL), \
     op(OP_FUN), \
     op(OP_GSET), \
     op(OP_HALT), \
