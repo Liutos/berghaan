@@ -37,6 +37,7 @@ extern const char *op_name(op_t *);
 extern op_t *op_new0(OP_T);
 extern op_t *op_new1(OP_T, intptr_t);
 extern op_t *op_new2(OP_T, intptr_t, intptr_t);
+extern op_t *op_next_label(const char *);
 extern void op_print(op_t *, FILE *);
 
 #define OP_NEW0(t) op_new0(t)
@@ -47,7 +48,9 @@ extern void op_print(op_t *, FILE *);
 #define OP_ARG_ARITY(x) OP_ARG0(x)
 #define OP_FUN_NAME(x) ((const char *)OP_ARG0(x))
 #define OP_GSET_NAME(x) ((char *)OP_ARG0(x))
+#define OP_JUMP_LABEL(x) ((const char *)OP_ARG0(x))
 #define OP_LABEL_NAME(x) ((const char *)OP_ARG0(x))
 #define OP_PUSH_TARGET(x) OP_ARG0(x)
 #define OP_REF_X(x) OP_ARG0(x)
 #define OP_REF_Y(x) OP_ARG1(x)
+#define OP_TJUMP_LABEL(x) ((const char *)OP_ARG0(x))

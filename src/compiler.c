@@ -65,7 +65,7 @@ compile_defun(code_t *s, ast_t *args, env_t *env)
     emit(s, OP_NEW0(OP_POP));
     emit(s, OP_NEW0(OP_NIL));
     // 扩展编译器的环境
-    env_bind(env, name, NULL);
+    env_push_back(env, name, NULL);
 }
 
 static void
@@ -91,12 +91,14 @@ compile_if(code_t *s, ast_t *args, env_t *env)
     ast_t *expr_then = AST_CONS_2ND(args);
     ast_t *expr_else = AST_CONS_3ND(args);
     compiler_compile_any(s, expr_test, env);
-    emit(s, OP_NEW1(OP_TJUMP, "then"));
+    op_t *label_end = op_next_label("end");
+    op_t *label_then = op_next_label("then");
+    emit(s, OP_NEW1(OP_TJUMP, OP_LABEL_NAME(label_then)));
     compiler_compile_any(s, expr_else, env);
-    emit(s, OP_NEW1(OP_JUMP, "end"));
-    emit(s, OP_NEW1(OP_LABEL, "then"));
+    emit(s, OP_NEW1(OP_JUMP, OP_LABEL_NAME(label_end)));
+    emit(s, label_then);
     compiler_compile_any(s, expr_then, env);
-    emit(s, OP_NEW1(OP_LABEL, "end"));
+    emit(s, label_end);
 }
 
 static void
