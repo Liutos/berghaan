@@ -12,13 +12,15 @@
     op(OP_FUN), \
     op(OP_GSET), \
     op(OP_HALT), \
+    op(OP_JUMP), \
     op(OP_LABEL), \
     op(OP_NIL), \
     op(OP_POP), \
     op(OP_PRINT), \
     op(OP_PUSH), \
     op(OP_REF), \
-    op(OP_RET),
+    op(OP_RET), \
+    op(OP_TJUMP),
 #define STRINGIFY(x) #x
 
 typedef enum {

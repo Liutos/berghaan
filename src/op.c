@@ -41,7 +41,7 @@ void
 op_print(op_t *op, FILE *out)
 {
     if (op->type != OP_LABEL)
-        fprintf(out, "%s", op_name(op));
+        fprintf(out, "  %s", op_name(op));
     switch (op->type) {
         case OP_ARG:
             fprintf(out, " %"PRIiPTR, OP_ARG_ARITY(op));

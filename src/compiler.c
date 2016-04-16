@@ -85,6 +85,21 @@ compile_funcall(code_t *s, ast_t *x, env_t *env)
 }
 
 static void
+compile_if(code_t *s, ast_t *args, env_t *env)
+{
+    ast_t *expr_test = AST_CONS_1ST(args);
+    ast_t *expr_then = AST_CONS_2ND(args);
+    ast_t *expr_else = AST_CONS_3ND(args);
+    compiler_compile_any(s, expr_test, env);
+    emit(s, OP_NEW1(OP_TJUMP, "then"));
+    compiler_compile_any(s, expr_else, env);
+    emit(s, OP_NEW1(OP_JUMP, "end"));
+    emit(s, OP_NEW1(OP_LABEL, "then"));
+    compiler_compile_any(s, expr_then, env);
+    emit(s, OP_NEW1(OP_LABEL, "end"));
+}
+
+static void
 compile_set(code_t *s, ast_t *args, env_t *env)
 {
     assert(args->type == AST_CONS);
@@ -107,6 +122,8 @@ compiler_compile_cons(code_t *s, ast_t *x, env_t *env)
         compile_set(s, AST_CONS_CDR(x), env);
     } else if (utils_str_equal(name, "defun")) {
         compile_defun(s, AST_CONS_CDR(x), env);
+    } else if (utils_str_equal(name, "if")) {
+        compile_if(s, AST_CONS_CDR(x), env);
     } else {
         compile_funcall(s, x, env);
     }
@@ -127,6 +144,7 @@ compiler_compile_prog(ast_t *prog, env_t *env)
 {
     assert(prog->type == AST_PROG);
     ast_t *exprs = AST_PROG_EXPRS(prog);
+    emit(toplevel_code, OP_NEW1(OP_LABEL, "_start"));
     compile_sequence(toplevel_code, exprs, env);
     emit(toplevel_code, OP_NEW0(OP_PRINT));
     emit(toplevel_code, OP_NEW0(OP_HALT));
@@ -136,6 +154,9 @@ static void
 compiler_compile_any(code_t *s, ast_t *x, env_t *env)
 {
     switch (x->type) {
+        case AST_BOOL:
+            emit(s, OP_NEW1(OP_PUSH, object_bool_new(AST_BOOL_VALUE(x))));
+            break;
         case AST_CONS:
             compiler_compile_cons(s, x, env);
             break;

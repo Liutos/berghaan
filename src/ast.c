@@ -9,14 +9,14 @@ static void
 ast_bool_dfs(ast_t *b)
 {
     assert(b->type == AST_BOOL);
-    printf("%s", b ? "true" : "false");
+    printf("%s", AST_BOOL_VALUE(b) ? "true" : "false");
 }
 
 static void
 ast_bool_print(ast_t *b, FILE *out)
 {
     assert(b->type == AST_BOOL);
-    fprintf(out, "%s", b ? "true" : "false");
+    fprintf(out, "%s", AST_BOOL_VALUE(b) ? "true" : "false");
 }
 
 static void
