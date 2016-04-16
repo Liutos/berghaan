@@ -25,7 +25,7 @@ main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
     object_print(obj);
     printf("\n");
 
-    code = "(defun foo (x) (if x true false)) (defun bar (y) (foo y)) (bar 233)";
+    code = "(set a 1) (defun foo (x) a) (defun bar (y) (foo y)) (bar 233)";
     lexer = lexer_new(code);
     parser = parser_new(lexer);
     prog = program(parser);

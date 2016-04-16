@@ -60,8 +60,11 @@ op_print(op_t *op, FILE *out)
         case OP_FUN:
             fprintf(out, " %s", OP_FUN_NAME(op));
             break;
+        case OP_GREF:
+            fprintf(out, " %"PRIiPTR" %"PRIiPTR, OP_GREF_X(op), OP_GREF_Y(op));
+            break;
         case OP_GSET:
-            fprintf(out, " %s", OP_GSET_NAME(op));
+            fprintf(out, " %"PRIiPTR" %"PRIiPTR, OP_GSET_X(op), OP_GSET_Y(op));
             break;
         case OP_JUMP:
             fprintf(out, " %s", OP_JUMP_LABEL(op));

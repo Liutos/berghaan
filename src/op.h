@@ -10,6 +10,7 @@
 #define OPS(op) op(OP_ARG), \
     op(OP_CALL), \
     op(OP_FUN), \
+    op(OP_GREF), \
     op(OP_GSET), \
     op(OP_HALT), \
     op(OP_JUMP), \
@@ -47,7 +48,10 @@ extern void op_print(op_t *, FILE *);
 #define OP_ARG1(x) ((x)->arg1)
 #define OP_ARG_ARITY(x) OP_ARG0(x)
 #define OP_FUN_NAME(x) ((const char *)OP_ARG0(x))
-#define OP_GSET_NAME(x) ((char *)OP_ARG0(x))
+#define OP_GREF_X(x) OP_ARG0(x)
+#define OP_GREF_Y(x) OP_ARG1(x)
+#define OP_GSET_X(x) OP_ARG0(x)
+#define OP_GSET_Y(x) OP_ARG1(x)
 #define OP_JUMP_LABEL(x) ((const char *)OP_ARG0(x))
 #define OP_LABEL_NAME(x) ((const char *)OP_ARG0(x))
 #define OP_PUSH_TARGET(x) OP_ARG0(x)

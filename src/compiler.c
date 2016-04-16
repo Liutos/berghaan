@@ -56,16 +56,18 @@ compile_defun(code_t *s, ast_t *args, env_t *env)
     }
     // 编译函数体
     compile_sequence(toplevel_defs, body, nenv);
+    // 扩展编译器的环境
+    env_push_back(toplevel_env, name, NULL);
+    int x, y;
+    assert(env_position(toplevel_env, name, &x, &y) == true);
     // 写入返回指令
     emit(toplevel_defs, OP_NEW0(OP_RET));
     // 创建函数对象
     emit(s, OP_NEW1(OP_FUN, name));
     // 绑定到顶层环境
-    emit(s, OP_NEW1(OP_GSET, name));
+    emit(s, OP_NEW2(OP_GSET, x, y));
     emit(s, OP_NEW0(OP_POP));
     emit(s, OP_NEW0(OP_NIL));
-    // 扩展编译器的环境
-    env_push_back(env, name, NULL);
 }
 
 static void
@@ -109,8 +111,12 @@ compile_set(code_t *s, ast_t *args, env_t *env)
     ast_t *expr = AST_CONS_2ND(args);
     compiler_compile_any(s, expr, env);
     char *name = AST_ID_NAME(var);
-    env_push_back(toplevel_env, name, NULL);
-    emit(s, OP_NEW1(OP_GSET, name));
+    int x, y;
+    if (env_position(toplevel_env, name, &x, &y) == false) {
+        env_push_back(toplevel_env, name, NULL);
+        assert(env_position(toplevel_env, name, &x, &y) == true);
+    }
+    emit(s, OP_NEW2(OP_GSET, x, y));
 }
 
 static void
@@ -137,8 +143,12 @@ compiler_compile_id(code_t *s, ast_t *id, env_t *env)
     assert(id->type == AST_ID);
     int x, y;
     bool is_found = env_position(env, AST_ID_NAME(id), &x, &y);
-    assert(is_found == true);
-    emit(s, OP_NEW2(OP_REF, x, y));
+    if (is_found) {
+        emit(s, OP_NEW2(OP_REF, x, y));
+    } else {
+        assert(env_position(toplevel_env, AST_ID_NAME(id), &x, &y) == true);
+        emit(s, OP_NEW2(OP_GREF, x, y));
+    }
 }
 
 static void
@@ -180,7 +190,7 @@ void
 compiler_compile(ast_t *prog)
 {
     assert(prog->type == AST_PROG);
-    compiler_compile_prog(prog, toplevel_env);
+    compiler_compile_prog(prog, NULL);
 }
 
 void
