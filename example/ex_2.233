@@ -1,0 +1,5 @@
+(defun id (x) x)
+
+(set foo id)
+
+(foo 666)
