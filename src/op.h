@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "base/vector.h"
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -35,12 +37,18 @@ typedef struct {
     intptr_t arg1;
 } op_t;
 
+typedef vector_t code_t;
+
 extern const char *op_name(op_t *);
 extern op_t *op_new0(OP_T);
 extern op_t *op_new1(OP_T, intptr_t);
 extern op_t *op_new2(OP_T, intptr_t, intptr_t);
 extern op_t *op_next_label(const char *);
 extern void op_print(op_t *, FILE *);
+extern void code_print(code_t *, FILE *);
+extern void emit(code_t *, op_t *);
+extern code_t *code_concat(code_t *, code_t *);
+extern op_t *code_at(code_t *, size_t);
 
 #define OP_NEW0(t) op_new0(t)
 #define OP_NEW1(t, a0) op_new1(t, (intptr_t)a0)
@@ -59,3 +67,5 @@ extern void op_print(op_t *, FILE *);
 #define OP_REF_X(x) OP_ARG0(x)
 #define OP_REF_Y(x) OP_ARG1(x)
 #define OP_TJUMP_LABEL(x) ((const char *)OP_ARG0(x))
+
+#define code_new vector_new

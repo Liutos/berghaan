@@ -1,5 +1,6 @@
 bin_PROGRAMS = main
 main_SOURCES = \
+    assembler.c \
     base/string.c \
     base/list.c \
     base/hash.c \
@@ -13,5 +14,6 @@ main_SOURCES = \
     main.c \
     object.c \
     op.c \
-    parser.c
+    parser.c \
+    vm.c
 main_CFLAGS = -Wall -Wextra -g -march=native -std=gnu99

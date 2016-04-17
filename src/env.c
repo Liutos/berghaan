@@ -65,3 +65,10 @@ env_reference(env_t *env, const char *variable)
     }
     return NULL;
 }
+
+env_t *
+env_set(env_t *env, int index, object_t *value)
+{
+    assoc_list_set(env->bindings, index, value);
+    return env;
+}

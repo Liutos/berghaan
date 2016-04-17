@@ -9,32 +9,12 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#define code_new vector_new
-
 static void compiler_compile_any(code_t *, ast_t *, env_t *);
 
 static int toplevel_var_count = 0;
 static env_t *toplevel_env = NULL;
 static code_t *toplevel_code = NULL;
 static code_t *toplevel_defs = NULL;
-
-static void
-emit(code_t *s, op_t *op)
-{
-    vector_push_back(s, op);
-}
-
-static code_t *
-code_concat(code_t *dest, code_t *code)
-{
-    return vector_concat(dest, code);
-}
-
-static op_t *
-code_at(code_t *code, size_t index)
-{
-    return (op_t *)vector_at(code, index);
-}
 
 static void
 compile_sequence(code_t *s, ast_t *body, env_t *env)
@@ -223,8 +203,5 @@ compiler_done(void)
     emit(program, OP_NEW1(OP_GENV, toplevel_var_count));
     program = code_concat(program, toplevel_code);
     program = code_concat(program, toplevel_defs);
-    for (size_t i = 0; i < program->length; i++) {
-        op_print(code_at(program, i), stdout);
-    }
     return program;
 }

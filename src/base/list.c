@@ -1,5 +1,6 @@
 #include "list.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -36,6 +37,19 @@ assoc_list_push_back(assoc_list_t *lst, const char *key, void *val)
     n->value = val;
     n->next = NULL;
     node->next = n;
+    return lst;
+}
+
+assoc_list_t *
+assoc_list_set(assoc_list_t *lst, int index, void *val)
+{
+    assoc_node_t *node = lst->first;
+    while (index > 0) {
+        assert(node != NULL);
+        node = node->next;
+    }
+    assert(node != NULL);
+    node->value = val;
     return lst;
 }
 

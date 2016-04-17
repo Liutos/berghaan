@@ -1,3 +1,4 @@
+#include "assembler.h"
 #include "ast.h"
 #include "compiler.h"
 #include "interpreter.h"
@@ -31,8 +32,15 @@ main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
     prog = program(parser);
     ast_print(prog, stdout);
     puts("");
+    // 进行编译
     compiler_init();
     compiler_compile(prog);
-    compiler_done();
+    code_t *ins = compiler_done();
+    // 进行重定位
+    ins = relocate(ins);
+    code_print(ins, stdout);
+    // 交给虚拟机执行
+    vm_t *vm = vm_new();
+    vm_execute(vm, ins);
     return 0;
 }

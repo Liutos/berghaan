@@ -58,7 +58,7 @@ op_print(op_t *op, FILE *out)
             fprintf(out, " %"PRIiPTR, OP_ARG_ARITY(op));
             break;
         case OP_FUN:
-            fprintf(out, " %s", OP_FUN_NAME(op));
+            fprintf(out, " %"PRIiPTR, (intptr_t)OP_FUN_NAME(op));
             break;
         case OP_GENV:
             fprintf(out, " %"PRIiPTR, OP_ARG0(op));
@@ -70,7 +70,7 @@ op_print(op_t *op, FILE *out)
             fprintf(out, " %"PRIiPTR" %"PRIiPTR, OP_GSET_X(op), OP_GSET_Y(op));
             break;
         case OP_JUMP:
-            fprintf(out, " %s", OP_JUMP_LABEL(op));
+            fprintf(out, " %"PRIiPTR, (intptr_t)OP_JUMP_LABEL(op));
             break;
         case OP_LABEL:
             fprintf(out, "%s:", OP_LABEL_NAME(op));
@@ -79,9 +79,36 @@ op_print(op_t *op, FILE *out)
             fprintf(out, " %"PRIiPTR" %"PRIiPTR, OP_REF_X(op), OP_REF_Y(op));
             break;
         case OP_TJUMP:
-            fprintf(out, " %s", OP_TJUMP_LABEL(op));
+            fprintf(out, " %"PRIiPTR, (intptr_t)OP_TJUMP_LABEL(op));
             break;
         default :;
     }
     fprintf(out, "\n");
+}
+
+void
+code_print(code_t *s, FILE *out)
+{
+    for (size_t i = 0; i < s->length; i++) {
+        fprintf(out, "%lu\t", i);
+        op_print(code_at(s, i), out);
+    }
+}
+
+void
+emit(code_t *s, op_t *op)
+{
+    vector_push_back(s, op);
+}
+
+code_t *
+code_concat(code_t *dest, code_t *code)
+{
+    return vector_concat(dest, code);
+}
+
+op_t *
+code_at(code_t *code, size_t index)
+{
+    return (op_t *)vector_at(code, index);
 }
