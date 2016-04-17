@@ -19,6 +19,18 @@ object_char_print(object_t *c)
 }
 
 static void
+object_fun_print(object_t *f)
+{
+    assert(f->type == OBJECT_FUN);
+    printf("#<FUN ");
+    if (OBJECT_FUN_TYPE(f) == FUN_NATIVE)
+        printf("native");
+    else
+        printf("udf");
+    printf("%p>", f);
+}
+
+static void
 object_int_print(object_t *n)
 {
     assert(n->type == OBJECT_INT);
@@ -30,6 +42,14 @@ object_nil_print(object_t *n)
 {
     assert(n->type == OBJECT_NIL);
     printf("nil");
+}
+
+static object_t *
+object_new(OBJECT_T type)
+{
+    object_t *o = calloc(1, sizeof(object_t));
+    o->type = type;
+    return o;
 }
 
 object_t *
@@ -48,6 +68,25 @@ object_char_new(uint32_t value)
     c->type = OBJECT_CHAR;
     OBJECT_CHAR_VALUE(c) = value;
     return c;
+}
+
+object_t *
+object_fun_native_new(int arity, void *impl)
+{
+    object_t *f = object_new(OBJECT_FUN);
+    OBJECT_FUN_TYPE(f) = FUN_NATIVE;
+    OBJECT_FUN_NATIVE_ARITY(f) = arity;
+    OBJECT_FUN_NATIVE_IMPL(f) = impl;
+    return f;
+}
+
+object_t *
+object_fun_udf_new(int entry)
+{
+    object_t *f = object_new(OBJECT_FUN);
+    OBJECT_FUN_TYPE(f) = FUN_UDF;
+    OBJECT_FUN_UDF_ENTRY(f) = entry;
+    return f;
 }
 
 object_t *
@@ -76,6 +115,9 @@ object_print(object_t *x)
             break;
         case OBJECT_CHAR:
             object_char_print(x);
+            break;
+        case OBJECT_FUN:
+            object_fun_print(x);
             break;
         case OBJECT_INT:
             object_int_print(x);

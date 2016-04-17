@@ -15,5 +15,6 @@ main_SOURCES = \
     object.c \
     op.c \
     parser.c \
+    store.c \
     vm.c
 main_CFLAGS = -Wall -Wextra -g -march=native -std=gnu99

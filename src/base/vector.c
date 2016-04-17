@@ -27,7 +27,7 @@ vector_at(vector_t *v, size_t index)
 {
     assert(v != NULL);
     assert(index < v->length);
-    return v->data[index];
+    return vector_unsafe_at(v, index);
 }
 
 void *
@@ -35,6 +35,21 @@ vector_back(vector_t *v)
 {
     assert(v != NULL);
     return v->data[v->length - 1];
+}
+
+void *
+vector_set(vector_t *v, size_t index, void *value)
+{
+    assert(index < v->capacity);
+    v->data[index] = value;
+    return value;
+}
+
+void *
+vector_unsafe_at(vector_t *v, size_t index)
+{
+    assert(v != NULL);
+    return v->data[index];
 }
 
 void
@@ -49,13 +64,13 @@ void
 vector_push_back(vector_t *v, void *data)
 {
     assert(v != NULL);
-    vector_reverse(v, v->length + 1);
+    vector_reserve(v, v->length + 1);
     v->data[v->length] = data;
     v->length++;
 }
 
 void
-vector_reverse(vector_t *v, size_t n)
+vector_reserve(vector_t *v, size_t n)
 {
     assert(v != NULL);
     if (v->capacity >= n)

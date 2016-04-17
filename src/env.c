@@ -67,8 +67,10 @@ env_reference(env_t *env, const char *variable)
 }
 
 env_t *
-env_set(env_t *env, int index, object_t *value)
+env_set(env_t *env, int x, int y, object_t *value)
 {
-    assoc_list_set(env->bindings, index, value);
+    while (x > 0 )
+        env = env->outer;
+    assoc_list_set(env->bindings, y, value);
     return env;
 }

@@ -4,11 +4,12 @@
 #pragma once
 
 #include "base/vector.h"
-#include "env.h"
+#include "store.h"
 
 typedef struct {
-    env_t *env;
+    store_t *env;
     vector_t *data_stack;
+    vector_t *frame_stack;
 } vm_t;
 
 extern vm_t *vm_new(void);
