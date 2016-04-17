@@ -10,6 +10,7 @@
 #define OPS(op) op(OP_ARG), \
     op(OP_CALL), \
     op(OP_FUN), \
+    op(OP_GENV), \
     op(OP_GREF), \
     op(OP_GSET), \
     op(OP_HALT), \

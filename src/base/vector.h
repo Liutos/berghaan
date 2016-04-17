@@ -12,6 +12,7 @@ typedef struct {
 } vector_t;
 
 extern vector_t *vector_new(void);
+extern vector_t *vector_concat(vector_t *, vector_t *);
 extern void *vector_at(vector_t *, size_t);
 extern void *vector_back(vector_t *);
 extern void vector_pop_back(vector_t *);

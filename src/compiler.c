@@ -13,6 +13,7 @@
 
 static void compiler_compile_any(code_t *, ast_t *, env_t *);
 
+static int toplevel_var_count = 0;
 static env_t *toplevel_env = NULL;
 static code_t *toplevel_code = NULL;
 static code_t *toplevel_defs = NULL;
@@ -21,6 +22,18 @@ static void
 emit(code_t *s, op_t *op)
 {
     vector_push_back(s, op);
+}
+
+static code_t *
+code_concat(code_t *dest, code_t *code)
+{
+    return vector_concat(dest, code);
+}
+
+static op_t *
+code_at(code_t *code, size_t index)
+{
+    return (op_t *)vector_at(code, index);
 }
 
 static void
@@ -66,6 +79,7 @@ compile_defun(code_t *s, ast_t *args, env_t *env)
     emit(s, OP_NEW1(OP_FUN, name));
     // 绑定到顶层环境
     emit(s, OP_NEW2(OP_GSET, x, y));
+    toplevel_var_count++;
     emit(s, OP_NEW0(OP_POP));
     emit(s, OP_NEW0(OP_NIL));
 }
@@ -117,6 +131,7 @@ compile_set(code_t *s, ast_t *args, env_t *env)
         assert(env_position(toplevel_env, name, &x, &y) == true);
     }
     emit(s, OP_NEW2(OP_GSET, x, y));
+    toplevel_var_count++;
 }
 
 static void
@@ -204,12 +219,12 @@ compiler_init(void)
 code_t *
 compiler_done(void)
 {
-    // 将函数定义追加到运行代码中
-    for (size_t i = 0; i < toplevel_defs->length; i++) {
-        emit(toplevel_code, (op_t *)vector_at(toplevel_defs, i));
+    vector_t *program = code_new();
+    emit(program, OP_NEW1(OP_GENV, toplevel_var_count));
+    program = code_concat(program, toplevel_code);
+    program = code_concat(program, toplevel_defs);
+    for (size_t i = 0; i < program->length; i++) {
+        op_print(code_at(program, i), stdout);
     }
-    for (size_t i = 0; i < toplevel_code->length; i++) {
-        op_print((op_t *)vector_at(toplevel_code, i), stdout);
-    }
-    return toplevel_code;
+    return program;
 }

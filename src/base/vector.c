@@ -14,6 +14,14 @@ vector_new(void)
     return v;
 }
 
+vector_t *
+vector_concat(vector_t *v1, vector_t *v2)
+{
+    for (size_t i = 0; i < v2->length; i++)
+        vector_push_back(v1, vector_at(v2, i));
+    return v1;
+}
+
 void *
 vector_at(vector_t *v, size_t index)
 {
