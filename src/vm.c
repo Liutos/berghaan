@@ -127,6 +127,9 @@ vm_execute(vm_t *vm, vector_t *code)
             case OP_HALT:
                 exit(EXIT_SUCCESS);
                 break;
+            case OP_JUMP:
+                pc = OP_ARG0(op);
+                break;
             case OP_NIL:
                 vm_push_data(vm, object_nil_new());
                 NEXT;
@@ -149,6 +152,15 @@ vm_execute(vm_t *vm, vector_t *code)
                 frame = vm_pop_frame(vm);
                 pc = frame->pc;
                 NEXT;
+            case OP_TJUMP:
+                obj = vm_last_data(vm);
+                vm_pop_data(vm);
+                assert(obj->type == OBJECT_BOOL);
+                if (OBJECT_BOOL_VALUE(obj) == true)
+                    pc = OP_ARG0(op);
+                else
+                    pc++;
+                break;
             default :
                 printf("Undefined instruction: %s\n", op_name(op));
                 exit(EXIT_FAILURE);
