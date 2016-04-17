@@ -13,6 +13,15 @@ string_t *string_new(void)
     return s;
 }
 
+void
+string_append(string_t *s, const char *part)
+{
+    while (*part != '\0') {
+        string_push_back(s, *part);
+        part++;
+    }
+}
+
 void string_clear(string_t *s)
 {
     s->length = 0;

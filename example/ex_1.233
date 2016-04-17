@@ -1,0 +1,9 @@
+(set a 1)
+
+(defun foo (x) (set a x))
+
+(defun bar (y) (foo y))
+
+(bar 233)
+
+a

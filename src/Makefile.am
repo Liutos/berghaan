@@ -9,7 +9,6 @@ main_SOURCES = \
     ast.c \
     compiler.c \
     env.c \
-    interpreter.c \
     lexer.c \
     main.c \
     object.c \

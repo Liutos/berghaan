@@ -1,7 +1,7 @@
 #include "assembler.h"
 #include "ast.h"
+#include "base/string.h"
 #include "compiler.h"
-#include "interpreter.h"
 #include "lexer.h"
 #include "parser.h"
 #include "object.h"
@@ -12,24 +12,17 @@
 int
 main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
-    interpreter_init();
+    // 读取标准输入
+    string_t *s = string_new();
+    char part[256] = {0};
+    while (fgets(part, sizeof(part), stdin) != NULL) {
+        string_append(s, part);
+    }
+    const char *code = s->data;
 
-    const char *code = "(defun equal? (x y) (= x y)) (set foobar 233) (if (equal? foobar foobar) (yes) 666)";
     lexer_t *lexer = lexer_new(code);
     parser_t *parser = parser_new(lexer);
     ast_t *prog = program(parser);
-    ast_print(prog, stdout);
-    printf("\n");
-    ast_dfs(prog);
-    printf("\n");
-    object_t *obj = interpret(prog);
-    object_print(obj);
-    printf("\n");
-
-    code = "(set a 1) (defun foo (x) (set a x)) (defun bar (y) (foo y)) (bar 233) a";
-    lexer = lexer_new(code);
-    parser = parser_new(lexer);
-    prog = program(parser);
     ast_print(prog, stdout);
     puts("");
     // 进行编译
