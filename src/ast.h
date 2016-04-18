@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "base/vector.h"
+
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -52,3 +54,4 @@ extern ast_t *ast_prog_new(ast_t *);
 extern int ast_cons_length(ast_t *);
 extern void ast_dfs(ast_t *);
 extern void ast_print(ast_t *, FILE *);
+extern vector_t *ast_find_cons(const char *);

@@ -1,9 +1,14 @@
 #include "ast.h"
+#include "base/list.h"
+#include "base/utils.h"
+#include "base/vector.h"
 
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+static assoc_list_t *sf = NULL;
 
 static void
 ast_bool_dfs(ast_t *b)
@@ -23,7 +28,16 @@ static void
 ast_cons_dfs(ast_t *cons)
 {
     assert(cons->type == AST_CONS);
-    ast_dfs(AST_CONS_CAR(cons));
+    ast_t *car = AST_CONS_CAR(cons);
+    if (car->type == AST_ID && utils_str_equal("defun", AST_ID_NAME(car))) {
+        vector_t *v = assoc_list_search(sf, AST_ID_NAME(car));
+        if (v == NULL) {
+            v = vector_new();
+            assoc_list_push(sf, AST_ID_NAME(car), v);
+        }
+        vector_push_back(v, cons);
+    }
+    ast_dfs(car);
     if (AST_CONS_CDR(cons) != NULL)
         ast_dfs(AST_CONS_CDR(cons));
 }
@@ -145,6 +159,8 @@ ast_cons_length(ast_t *cons)
 void
 ast_dfs(ast_t *x)
 {
+    if (sf == NULL)
+        sf = assoc_list_new();
     switch (x->type) {
         case AST_BOOL:
             ast_bool_dfs(x);
@@ -184,4 +200,11 @@ ast_print(ast_t *x, FILE *out)
             ast_prog_print(x, out);
             break;
     }
+}
+
+vector_t *
+ast_find_cons(const char *name)
+{
+    assert(sf != NULL);
+    return (vector_t *)assoc_list_search(sf, name);
 }

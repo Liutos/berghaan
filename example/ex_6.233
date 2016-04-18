@@ -1,0 +1,5 @@
+(defun even? (n) (if (= n 0) true (odd? (- n 1))))
+
+(defun odd? (n) (if (= n 0) false (even? (- n 1))))
+
+(even? 17)

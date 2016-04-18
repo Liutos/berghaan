@@ -94,8 +94,6 @@ compile_defun(code_t *s, ast_t *args, env_t *env)
         env_bind(nenv, AST_ID_NAME(par), NULL);
         parameters = AST_CONS_CDR(parameters);
     }
-    // 扩展编译器的环境
-    env_push_back(toplevel_env, name, NULL);
     int x, y;
     assert(env_position(toplevel_env, name, &x, &y) == true);
     // 编译函数体
@@ -230,6 +228,17 @@ void
 compiler_compile(ast_t *prog)
 {
     assert(prog->type == AST_PROG);
+    ast_dfs(prog);
+    puts("");
+    // 声明所有的defun中的函数名，支持向前引用
+    vector_t *v = ast_find_cons("defun");
+    for (size_t i = 0; i < v->length; i++) {
+        ast_t *d = vector_at(v, i);
+        ast_t *fun = AST_CONS_2ND(d);
+        assert(fun->type == AST_ID);
+        const char *name = AST_ID_NAME(fun);
+        env_push_back(toplevel_env, name, NULL);
+    }
     compiler_compile_prog(prog, NULL);
 }
 
