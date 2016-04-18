@@ -120,6 +120,11 @@ vm_execute(vm_t *vm, vector_t *code)
                 lhs = vm_pop_data(vm);
                 vm_push_data(vm, object_int_new(OBJECT_INT_VALUE(lhs) / OBJECT_INT_VALUE(rhs)));
                 NEXT;
+            case OP_EQL:
+                rhs = vm_pop_data(vm);
+                lhs = vm_pop_data(vm);
+                vm_push_data(vm, object_bool_new(OBJECT_INT_VALUE(lhs) == OBJECT_INT_VALUE(rhs)));
+                NEXT;
             case OP_FUN:
                 obj = object_fun_udf_new(OP_ARG0(op));
                 vm_push_data(vm, obj);

@@ -14,6 +14,7 @@
     op(OP_ARG), \
     op(OP_CALL), \
     op(OP_DIV), \
+    op(OP_EQL), \
     op(OP_FUN), \
     op(OP_GENV), \
     op(OP_GREF), \

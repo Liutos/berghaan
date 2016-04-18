@@ -21,6 +21,7 @@ static bif_t bif[] = {
         { .name = "-", .op = OP_SUB },
         { .name = "*", .op = OP_MUL },
         { .name = "/", .op = OP_DIV },
+        { .name = "=", .op = OP_EQL },
 };
 static int toplevel_var_count = 0;
 static env_t *toplevel_env = NULL;
@@ -93,12 +94,12 @@ compile_defun(code_t *s, ast_t *args, env_t *env)
         env_bind(nenv, AST_ID_NAME(par), NULL);
         parameters = AST_CONS_CDR(parameters);
     }
-    // 编译函数体
-    compile_sequence(toplevel_defs, body, nenv);
     // 扩展编译器的环境
     env_push_back(toplevel_env, name, NULL);
     int x, y;
     assert(env_position(toplevel_env, name, &x, &y) == true);
+    // 编译函数体
+    compile_sequence(toplevel_defs, body, nenv);
     // 写入返回指令
     emit(toplevel_defs, OP_NEW0(OP_RET));
     // 创建函数对象
