@@ -9,8 +9,11 @@
 #include <stdint.h>
 
 #define IDENTITY(x) x
-#define OPS(op) op(OP_ARG), \
+#define OPS(op) \
+    op(OP_ADD), \
+    op(OP_ARG), \
     op(OP_CALL), \
+    op(OP_DIV), \
     op(OP_FUN), \
     op(OP_GENV), \
     op(OP_GREF), \
@@ -18,12 +21,14 @@
     op(OP_HALT), \
     op(OP_JUMP), \
     op(OP_LABEL), \
+    op(OP_MUL), \
     op(OP_NIL), \
     op(OP_POP), \
     op(OP_PRINT), \
     op(OP_PUSH), \
     op(OP_REF), \
     op(OP_RET), \
+    op(OP_SUB), \
     op(OP_TJUMP),
 #define STRINGIFY(x) #x
 

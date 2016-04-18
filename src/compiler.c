@@ -9,12 +9,58 @@
 #include <assert.h>
 #include <stdlib.h>
 
+typedef struct {
+    const char *name;
+    OP_T op;
+} bif_t;
+
 static void compiler_compile_any(code_t *, ast_t *, env_t *);
 
+static bif_t bif[] = {
+        { .name = "+", .op = OP_ADD },
+        { .name = "-", .op = OP_SUB },
+        { .name = "*", .op = OP_MUL },
+        { .name = "/", .op = OP_DIV },
+};
 static int toplevel_var_count = 0;
 static env_t *toplevel_env = NULL;
 static code_t *toplevel_code = NULL;
 static code_t *toplevel_defs = NULL;
+
+static bool
+is_bif(const char *name)
+{
+    for (size_t i = 0; i < sizeof(bif) / sizeof(*bif); i++) {
+        if (utils_str_equal(name, bif[i].name))
+            return true;
+    }
+    return false;
+}
+
+static void
+compile_args(code_t *s, ast_t *args, env_t *env)
+{
+    while (args != NULL) {
+        ast_t *expr = AST_CONS_CAR(args);
+        compiler_compile_any(s, expr, env);
+        args = AST_CONS_CDR(args);
+    }
+}
+
+static void
+compile_bif(code_t *s, const char *name, ast_t *args, env_t *env)
+{
+    assert(args->type == AST_CONS);
+    // 编译实参列表
+    compile_args(s, args, env);
+    for (size_t i = 0; i < sizeof(bif) / sizeof(*bif); i++) {
+        if (utils_str_equal(name, bif[i].name)) {
+            emit(s, OP_NEW0(bif[i].op));
+            return;
+        }
+    }
+    assert(false);
+}
 
 static void
 compile_sequence(code_t *s, ast_t *body, env_t *env)
@@ -70,11 +116,7 @@ compile_funcall(code_t *s, ast_t *x, env_t *env)
     ast_t *fun = AST_CONS_CAR(x);
     ast_t *args = AST_CONS_CDR(x);
     // 编译实参列表
-    while (args != NULL) {
-        ast_t *expr = AST_CONS_CAR(args);
-        compiler_compile_any(s, expr, env);
-        args = AST_CONS_CDR(args);
-    }
+    compile_args(s, args, env);
     // 编译函数
     compiler_compile_any(s, fun, env);
     emit(s, OP_NEW0(OP_CALL));
@@ -127,6 +169,8 @@ compiler_compile_cons(code_t *s, ast_t *x, env_t *env)
         compile_defun(s, AST_CONS_CDR(x), env);
     } else if (utils_str_equal(name, "if")) {
         compile_if(s, AST_CONS_CDR(x), env);
+    } else if (is_bif(name)) {
+        compile_bif(s, name, AST_CONS_CDR(x), env);
     } else {
         compile_funcall(s, x, env);
     }

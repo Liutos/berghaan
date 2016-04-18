@@ -24,10 +24,18 @@ frame_new(int pc)
     return f;
 }
 
-static void
+static object_t *
+vm_last_data(vm_t *vm)
+{
+    return (object_t *)vector_back(vm->data_stack);
+}
+
+static object_t *
 vm_pop_data(vm_t *vm)
 {
+    object_t *o = vm_last_data(vm);
     vector_pop_back(vm->data_stack);
+    return o;
 }
 
 static frame_t *
@@ -48,12 +56,6 @@ static void
 vm_push_frame(vm_t *vm, frame_t *frame)
 {
     vector_push_back(vm->frame_stack, frame);
-}
-
-static object_t *
-vm_last_data(vm_t *vm)
-{
-    return (object_t *)vector_back(vm->data_stack);
 }
 
 static object_t *
@@ -80,12 +82,17 @@ vm_execute(vm_t *vm, vector_t *code)
     size_t pc = 0, prev_pc;
     store_t *env;
     frame_t *frame;
-    object_t *obj;
+    object_t *lhs, *obj, *rhs;
     while (true) {
         assert(pc < code->length);
         prev_pc = pc;
         op_t *op = vector_at(code, pc);
         switch (op->type) {
+            case OP_ADD:
+                rhs = vm_pop_data(vm);
+                lhs = vm_pop_data(vm);
+                vm_push_data(vm, object_int_new(OBJECT_INT_VALUE(lhs) + OBJECT_INT_VALUE(rhs)));
+                NEXT;
             case OP_ARG:
                 // 创建存储空间
                 env = store_new(OP_ARG0(op), vm->env);
@@ -108,6 +115,11 @@ vm_execute(vm_t *vm, vector_t *code)
                 vm_pop_data(vm);
                 pc = OBJECT_FUN_UDF_ENTRY(obj);
                 break;
+            case OP_DIV:
+                rhs = vm_pop_data(vm);
+                lhs = vm_pop_data(vm);
+                vm_push_data(vm, object_int_new(OBJECT_INT_VALUE(lhs) / OBJECT_INT_VALUE(rhs)));
+                NEXT;
             case OP_FUN:
                 obj = object_fun_udf_new(OP_ARG0(op));
                 vm_push_data(vm, obj);
@@ -130,6 +142,11 @@ vm_execute(vm_t *vm, vector_t *code)
             case OP_JUMP:
                 pc = OP_ARG0(op);
                 break;
+            case OP_MUL:
+                rhs = vm_pop_data(vm);
+                lhs = vm_pop_data(vm);
+                vm_push_data(vm, object_int_new(OBJECT_INT_VALUE(lhs) * OBJECT_INT_VALUE(rhs)));
+                NEXT;
             case OP_NIL:
                 vm_push_data(vm, object_nil_new());
                 NEXT;
@@ -151,6 +168,11 @@ vm_execute(vm_t *vm, vector_t *code)
             case OP_RET:
                 frame = vm_pop_frame(vm);
                 pc = frame->pc;
+                NEXT;
+            case OP_SUB:
+                rhs = vm_pop_data(vm);
+                lhs = vm_pop_data(vm);
+                vm_push_data(vm, object_int_new(OBJECT_INT_VALUE(lhs) - OBJECT_INT_VALUE(rhs)));
                 NEXT;
             case OP_TJUMP:
                 obj = vm_last_data(vm);
