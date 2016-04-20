@@ -15,7 +15,7 @@ static ast_t *list(parser_t *);
 static bool
 is_atom(TOKEN_T token)
 {
-    return token == TOKEN_BOOL || token == TOKEN_ID || token == TOKEN_INT;
+    return token == TOKEN_BOOL || token == TOKEN_ID || token == TOKEN_INT || token == TOKEN_SYMBOL;
 }
 
 static char *
@@ -64,8 +64,11 @@ expr(parser_t *parser)
         return ast_int_new(value);
     } else if (token == TOKEN_LP)
         return list(parser);
-    else
-        exit(EXIT_FAILURE);
+    else if (token == TOKEN_SYMBOL) {
+        char *n = parser_match(parser, TOKEN_SYMBOL);
+        return ast_symbol_new(n + 1);
+    }
+    exit(EXIT_FAILURE);
 }
 
 static ast_t *

@@ -98,6 +98,27 @@ ast_prog_print(ast_t *p, FILE *out)
     ast_print(AST_PROG_EXPRS(p), out);
 }
 
+static void
+ast_symbol_print(ast_t *s, FILE *out)
+{
+    assert(s->type == AST_SYMBOL);
+    fprintf(out, ":%s", AST_SYMBOL_NAME(s));
+}
+
+static void
+ast_symbol_dfs(ast_t *s)
+{
+    ast_symbol_print(s, stdout);
+}
+
+static ast_t *
+ast_new(AST_TYPE_T type)
+{
+    ast_t *a = calloc(1, sizeof(ast_t));
+    a->type = type;
+    return a;
+}
+
 ast_t *
 ast_bool_new(bool value)
 {
@@ -144,6 +165,14 @@ ast_prog_new(ast_t *exprs)
     return p;
 }
 
+ast_t *
+ast_symbol_new(const char *name)
+{
+    ast_t *s = ast_new(AST_SYMBOL);
+    AST_SYMBOL_NAME(s) = strdup(name);
+    return s;
+}
+
 int
 ast_cons_length(ast_t *cons)
 {
@@ -177,6 +206,9 @@ ast_dfs(ast_t *x)
         case AST_PROG:
             ast_prog_dfs(x);
             break;
+        case AST_SYMBOL:
+            ast_symbol_dfs(x);
+            break;
     }
 }
 
@@ -198,6 +230,9 @@ ast_print(ast_t *x, FILE *out)
             break;
         case AST_PROG:
             ast_prog_print(x, out);
+            break;
+        case AST_SYMBOL:
+            ast_symbol_print(x, out);
             break;
     }
 }

@@ -12,6 +12,7 @@ typedef enum {
     TOKEN_INT,
     TOKEN_LP,
     TOKEN_RP,
+    TOKEN_SYMBOL,
 } TOKEN_T;
 
 typedef struct {

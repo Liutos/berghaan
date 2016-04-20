@@ -35,6 +35,12 @@ is_integer(char *s)
     return true;
 }
 
+static bool
+is_symbol(const char *s)
+{
+    return *s == ':' && s[1] != '\0' && strchr(s + 1, ':') == NULL;
+}
+
 static TOKEN_T
 lexer_next_id(lexer_t *lexer)
 {
@@ -48,6 +54,8 @@ lexer_next_id(lexer_t *lexer)
         return TOKEN_BOOL;
     if (is_integer(lexer->token->data))
         return TOKEN_INT;
+    if (is_symbol(lexer->token->data))
+        return TOKEN_SYMBOL;
     return TOKEN_ID;
 }
 

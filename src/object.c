@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 static void
 object_bool_print(object_t *b)
@@ -44,6 +45,13 @@ object_nil_print(object_t *n)
 {
     assert(n->type == OBJECT_NIL);
     printf("nil");
+}
+
+static void
+object_symbol_print(object_t *s)
+{
+    assert(s->type == OBJECT_SYMBOL);
+    printf(":%s", OBJECT_SYMBOL_NAME(s));
 }
 
 static object_t *
@@ -108,6 +116,14 @@ object_nil_new(void)
     return n;
 }
 
+object_t *
+object_symbol_new(const char *name)
+{
+    object_t *s = object_new(OBJECT_SYMBOL);
+    OBJECT_SYMBOL_NAME(s) = strdup(name);
+    return s;
+}
+
 void
 object_print(object_t *x)
 {
@@ -126,6 +142,9 @@ object_print(object_t *x)
             break;
         case OBJECT_NIL:
             object_nil_print(x);
+            break;
+        case OBJECT_SYMBOL:
+            object_symbol_print(x);
             break;
     }
 }

@@ -220,6 +220,9 @@ compiler_compile_any(code_t *s, ast_t *x, env_t *env)
         case AST_PROG:
             compiler_compile_prog(x, env);
             break;
+        case AST_SYMBOL:
+            emit(s, OP_NEW1(OP_PUSH, object_symbol_new(AST_SYMBOL_NAME(x))));
+            break;
         default :
             exit(EXIT_FAILURE);
     }

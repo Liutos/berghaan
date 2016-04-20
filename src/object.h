@@ -12,6 +12,7 @@ typedef enum {
     OBJECT_FUN,
     OBJECT_INT,
     OBJECT_NIL,
+    OBJECT_SYMBOL,
 } OBJECT_T;
 
 typedef enum {
@@ -37,6 +38,7 @@ typedef struct {
                 } udf;
             } u;
         } fun;
+        char *symbol;
     } u;
 } object_t;
 
@@ -47,6 +49,7 @@ typedef struct {
 #define OBJECT_FUN_NATIVE_IMPL(x) ((x)->u.fun.u.native.impl)
 #define OBJECT_FUN_UDF_ENTRY(x) ((x)->u.fun.u.udf.entry)
 #define OBJECT_INT_VALUE(x) ((x)->u.integer)
+#define OBJECT_SYMBOL_NAME(x) ((x)->u.symbol)
 
 extern object_t *object_bool_new(bool);
 extern object_t *object_char_new(uint32_t);
@@ -54,4 +57,5 @@ extern object_t *object_fun_native_new(int, void *);
 extern object_t *object_fun_udf_new(int);
 extern object_t *object_int_new(int);
 extern object_t *object_nil_new(void);
+extern object_t *object_symbol_new(const char *);
 extern void object_print(object_t *);
