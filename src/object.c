@@ -1,3 +1,4 @@
+#include "base/utf8.h"
 #include "object.h"
 
 #include <assert.h>
@@ -15,7 +16,8 @@ static void
 object_char_print(object_t *c)
 {
     assert(c->type == OBJECT_CHAR);
-    printf("'%c'", OBJECT_CHAR_VALUE(c));
+//    printf("'%c'", OBJECT_CHAR_VALUE(c));
+    utf8_fprintf(stdout, OBJECT_CHAR_VALUE(c));
 }
 
 static void

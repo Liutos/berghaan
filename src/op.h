@@ -13,6 +13,7 @@
     op(OP_ADD), \
     op(OP_ARG), \
     op(OP_CALL), \
+    op(OP_CODE_CHAR), \
     op(OP_DIV), \
     op(OP_EQL), \
     op(OP_FUN), \

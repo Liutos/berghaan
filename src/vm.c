@@ -115,6 +115,10 @@ vm_execute(vm_t *vm, vector_t *code)
                 vm_pop_data(vm);
                 pc = OBJECT_FUN_UDF_ENTRY(obj);
                 break;
+            case OP_CODE_CHAR:
+                obj = vm_pop_data(vm);
+                vm_push_data(vm, object_char_new(OBJECT_INT_VALUE(obj)));
+                NEXT;
             case OP_DIV:
                 rhs = vm_pop_data(vm);
                 lhs = vm_pop_data(vm);

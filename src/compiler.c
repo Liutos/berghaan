@@ -22,6 +22,7 @@ static bif_t bif[] = {
         { .name = "*", .op = OP_MUL },
         { .name = "/", .op = OP_DIV },
         { .name = "=", .op = OP_EQL },
+        { .name = "code-char", .op = OP_CODE_CHAR },
 };
 static int toplevel_var_count = 0;
 static env_t *toplevel_env = NULL;
@@ -232,12 +233,14 @@ compiler_compile(ast_t *prog)
     puts("");
     // 声明所有的defun中的函数名，支持向前引用
     vector_t *v = ast_find_cons("defun");
-    for (size_t i = 0; i < v->length; i++) {
-        ast_t *d = vector_at(v, i);
-        ast_t *fun = AST_CONS_2ND(d);
-        assert(fun->type == AST_ID);
-        const char *name = AST_ID_NAME(fun);
-        env_push_back(toplevel_env, name, NULL);
+    if (v != NULL) {
+        for (size_t i = 0; i < v->length; i++) {
+            ast_t *d = vector_at(v, i);
+            ast_t *fun = AST_CONS_2ND(d);
+            assert(fun->type == AST_ID);
+            const char *name = AST_ID_NAME(fun);
+            env_push_back(toplevel_env, name, NULL);
+        }
     }
     compiler_compile_prog(prog, NULL);
 }
