@@ -1,6 +1,7 @@
 #include "assembler.h"
 #include "ast.h"
 #include "base/string.h"
+#include "bif.h"
 #include "compiler.h"
 #include "lexer.h"
 #include "parser.h"
@@ -25,6 +26,7 @@ main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
     ast_t *prog = program(parser);
     ast_print(prog, stdout);
     puts("");
+    bif_init(&toplevel_env, &toplevel_vec);
     // 进行编译
     compiler_init();
     compiler_compile(prog);

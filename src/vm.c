@@ -1,4 +1,5 @@
 #include "base/vector.h"
+#include "bif.h"
 #include "env.h"
 #include "object.h"
 #include "op.h"
@@ -14,7 +15,7 @@ typedef struct {
     int pc;
 } frame_t;
 
-static vector_t *toplevel_env = NULL;
+vector_t *toplevel_vec = NULL;
 
 static frame_t *
 frame_new(int pc)
@@ -64,6 +65,32 @@ vm_reference(vm_t *vm, int x, int y)
     return store_get(vm->env, x, y);
 }
 
+static void
+vm_call_native(vm_t *vm, object_t *f)
+{
+    assert(f->type == OBJECT_FUN && OBJECT_FUN_TYPE(f) == FUN_NATIVE);
+    object_t *result;
+    void *impl = OBJECT_FUN_NATIVE_IMPL(f);
+    object_t *arg0, *arg1;
+    switch (OBJECT_FUN_NATIVE_ARITY(f)) {
+        case 0:
+            result = ((bif_0_t)impl)();
+            break;
+        case 1:
+            arg0 = vm_pop_data(vm);
+            result = ((bif_1_t)impl)(arg0);
+            break;
+        case 2:
+            arg1 = vm_pop_data(vm);
+            arg0 = vm_pop_data(vm);
+            result = ((bif_2_t)impl)(arg0, arg1);
+            break;
+        default :
+            exit(EXIT_FAILURE);
+    }
+    vm_push_data(vm, result);
+}
+
 vm_t *
 vm_new(void)
 {
@@ -82,17 +109,12 @@ vm_execute(vm_t *vm, vector_t *code)
     size_t pc = 0, prev_pc;
     store_t *env;
     frame_t *frame;
-    object_t *lhs, *obj, *rhs;
+    object_t *obj;
     while (true) {
         assert(pc < code->length);
         prev_pc = pc;
         op_t *op = vector_at(code, pc);
         switch (op->type) {
-            case OP_ADD:
-                rhs = vm_pop_data(vm);
-                lhs = vm_pop_data(vm);
-                vm_push_data(vm, object_int_new(OBJECT_INT_VALUE(lhs) + OBJECT_INT_VALUE(rhs)));
-                NEXT;
             case OP_ARG:
                 // 创建存储空间
                 env = store_new(OP_ARG0(op), vm->env);
@@ -107,43 +129,32 @@ vm_execute(vm_t *vm, vector_t *code)
                 vm->env = env;
                 NEXT;
             case OP_CALL:
+                obj = vm_pop_data(vm);
+                if (OBJECT_FUN_TYPE(obj) == FUN_NATIVE) {
+                    vm_call_native(vm, obj);
+                    NEXT;
+                }
+                assert(OBJECT_FUN_TYPE(obj) == FUN_UDF);
                 // 保存现场信息
                 frame = frame_new(pc);
                 vm_push_frame(vm, frame);
                 // 跳转到函数体
-                obj = vm_last_data(vm);
-                vm_pop_data(vm);
                 pc = OBJECT_FUN_UDF_ENTRY(obj);
                 break;
-            case OP_CODE_CHAR:
-                obj = vm_pop_data(vm);
-                vm_push_data(vm, object_char_new(OBJECT_INT_VALUE(obj)));
-                NEXT;
-            case OP_DIV:
-                rhs = vm_pop_data(vm);
-                lhs = vm_pop_data(vm);
-                vm_push_data(vm, object_int_new(OBJECT_INT_VALUE(lhs) / OBJECT_INT_VALUE(rhs)));
-                NEXT;
-            case OP_EQL:
-                rhs = vm_pop_data(vm);
-                lhs = vm_pop_data(vm);
-                vm_push_data(vm, object_bool_new(OBJECT_INT_VALUE(lhs) == OBJECT_INT_VALUE(rhs)));
-                NEXT;
             case OP_FUN:
                 obj = object_fun_udf_new(OP_ARG0(op));
                 vm_push_data(vm, obj);
                 NEXT;
             case OP_GENV:
-                toplevel_env = vector_new();
-                vector_reserve(toplevel_env, OP_ARG0(op));
+                vector_reserve(toplevel_vec, toplevel_vec->length + OP_ARG0(op));
                 NEXT;
             case OP_GREF:
-                obj = vector_unsafe_at(toplevel_env, OP_GREF_Y(op));
+                obj = vector_unsafe_at(toplevel_vec, OP_GREF_Y(op));
                 vm_push_data(vm, obj);
                 NEXT;
             case OP_GSET:
                 obj = vm_last_data(vm);
-                vector_set(toplevel_env, OP_GSET_Y(op), obj);
+                vector_set(toplevel_vec, OP_GSET_Y(op), obj);
                 NEXT;
             case OP_HALT:
                 exit(EXIT_SUCCESS);
@@ -151,11 +162,6 @@ vm_execute(vm_t *vm, vector_t *code)
             case OP_JUMP:
                 pc = OP_ARG0(op);
                 break;
-            case OP_MUL:
-                rhs = vm_pop_data(vm);
-                lhs = vm_pop_data(vm);
-                vm_push_data(vm, object_int_new(OBJECT_INT_VALUE(lhs) * OBJECT_INT_VALUE(rhs)));
-                NEXT;
             case OP_NIL:
                 vm_push_data(vm, object_nil_new());
                 NEXT;
@@ -177,11 +183,6 @@ vm_execute(vm_t *vm, vector_t *code)
             case OP_RET:
                 frame = vm_pop_frame(vm);
                 pc = frame->pc;
-                NEXT;
-            case OP_SUB:
-                rhs = vm_pop_data(vm);
-                lhs = vm_pop_data(vm);
-                vm_push_data(vm, object_int_new(OBJECT_INT_VALUE(lhs) - OBJECT_INT_VALUE(rhs)));
                 NEXT;
             case OP_TJUMP:
                 obj = vm_last_data(vm);
