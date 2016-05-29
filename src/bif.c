@@ -58,6 +58,12 @@ bif_code2char(object_t *num)
     return object_char_new(OBJECT_INT_VALUE(num));
 }
 
+static object_t *
+bif_eq(object_t *x, object_t *y)
+{
+    return object_bool_new(x == y);
+}
+
 void
 bif_init(env_t **env, vector_t **vec)
 {
@@ -68,6 +74,7 @@ bif_init(env_t **env, vector_t **vec)
             { .name = "/", .impl = (void *)bif_div, .arity = 2 },
             { .name = "=", .impl = (void *)bif_equal, .arity = 2 },
             { .name = "code-char", .impl = (void *)bif_code2char, .arity = 1 },
+            { .name = "eq", .impl = (void *)bif_eq, .arity = 2 },
     };
     int len = sizeof(bif) / sizeof(*bif);
     // 初始化编译器环境
