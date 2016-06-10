@@ -255,7 +255,7 @@ void
 interpreter_init(void)
 {
     toplevel_env = env_new(NULL);
-    toplevel_udf = hash_table_new();
+    toplevel_udf = hash_table_new(hash_string_equal, hash_string_hash);
     function_t *f = calloc(1, sizeof(function_t));
     f->type = FUNCTION_NATIVE;
     FUNCTION_NATIVE_ARITY(f) = 0;

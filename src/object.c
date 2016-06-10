@@ -41,6 +41,13 @@ object_int_print(object_t *n)
 }
 
 static void
+object_map_print(object_t *m)
+{
+    assert(m->type == OBJECT_MAP);
+    printf("{}");
+}
+
+static void
 object_nil_print(object_t *n)
 {
     assert(n->type == OBJECT_NIL);
@@ -109,6 +116,14 @@ object_int_new(int value)
 }
 
 object_t *
+object_map_new(void)
+{
+    object_t *m = object_new(OBJECT_MAP);
+    m->u.map = hash_table_new(hash_pointer_equal, hash_pointer_hash);
+    return m;
+}
+
+object_t *
 object_nil_new(void)
 {
     object_t *n = calloc(1, sizeof(object_t));
@@ -139,6 +154,9 @@ object_print(object_t *x)
             break;
         case OBJECT_INT:
             object_int_print(x);
+            break;
+        case OBJECT_MAP:
+            object_map_print(x);
             break;
         case OBJECT_NIL:
             object_nil_print(x);
