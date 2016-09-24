@@ -64,6 +64,12 @@ bif_eq(object_t *x, object_t *y)
     return object_bool_new(x == y);
 }
 
+static object_t *
+bif_make_map(void)
+{
+    return object_map_new();
+}
+
 void
 bif_init(env_t **env, vector_t **vec)
 {
@@ -75,6 +81,7 @@ bif_init(env_t **env, vector_t **vec)
             { .name = "=", .impl = (void *)bif_equal, .arity = 2 },
             { .name = "code-char", .impl = (void *)bif_code2char, .arity = 1 },
             { .name = "eq", .impl = (void *)bif_eq, .arity = 2 },
+            { .name = "make-map", .impl = (void *)bif_make_map, .arity = 0 },
     };
     int len = sizeof(bif) / sizeof(*bif);
     // 初始化编译器环境
