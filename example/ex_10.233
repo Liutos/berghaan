@@ -1,1 +1,5 @@
-(make-map)
+(set map (make-map))
+
+(map-set map :hello 23837)
+
+(map-get map :hello)
