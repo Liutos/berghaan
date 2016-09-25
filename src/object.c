@@ -1,4 +1,5 @@
 #include "base/utf8.h"
+#include "base/vector.h"
 #include "object.h"
 
 #include <assert.h>
@@ -19,7 +20,6 @@ static void
 object_char_print(object_t *c)
 {
     assert(c->type == OBJECT_CHAR);
-//    printf("'%c'", OBJECT_CHAR_VALUE(c));
     utf8_fprintf(stdout, OBJECT_CHAR_VALUE(c));
 }
 
@@ -61,6 +61,13 @@ object_symbol_print(object_t *s)
 {
     assert(s->type == OBJECT_SYMBOL);
     printf(":%s", OBJECT_SYMBOL_NAME(s));
+}
+
+static void
+object_vector_print(object_t *v)
+{
+    assert(v->type == OBJECT_VECTOR);
+    printf("[]");
 }
 
 static object_t *
@@ -155,6 +162,14 @@ object_symbol_intern(const char *name)
     return symbol;
 }
 
+object_t *
+object_vector_new(void)
+{
+    object_t *v = object_new(OBJECT_VECTOR);
+    v->u.vector = vector_new();
+    return v;
+}
+
 void
 object_print(object_t *x)
 {
@@ -179,6 +194,9 @@ object_print(object_t *x)
             break;
         case OBJECT_SYMBOL:
             object_symbol_print(x);
+            break;
+        case OBJECT_VECTOR:
+            object_vector_print(x);
             break;
     }
 }

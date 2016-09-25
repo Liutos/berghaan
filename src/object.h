@@ -4,6 +4,7 @@
 #pragma once
 
 #include "base/hash.h"
+#include "base/vector.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -16,6 +17,7 @@ typedef enum {
     OBJECT_MAP,
     OBJECT_NIL,
     OBJECT_SYMBOL,
+    OBJECT_VECTOR,
 } OBJECT_T;
 
 typedef enum {
@@ -43,6 +45,7 @@ typedef struct {
         } fun;
         hash_table_t *map;
         char *symbol;
+        vector_t *vector;
     } u;
 } object_t;
 
@@ -64,4 +67,5 @@ extern object_t *object_map_new(void);
 extern object_t *object_nil_new(void);
 extern object_t *object_symbol_new(const char *);
 extern object_t *object_symbol_intern(const char *);
+extern object_t *object_vector_new(void);
 extern void object_print(object_t *);
