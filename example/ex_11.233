@@ -1,0 +1,5 @@
+(set vector (make-vector))
+
+(vector-push vector :hello)
+
+(vector-pop vector)

@@ -71,6 +71,12 @@ bif_make_map(void)
 }
 
 static object_t *
+bif_make_vector(void)
+{
+    return object_vector_new();
+}
+
+static object_t *
 bif_map_get(object_t *map, object_t *key)
 {
     assert(map->type == OBJECT_MAP);
@@ -85,6 +91,23 @@ bif_map_set(object_t *map, object_t *key, object_t *value)
     return value;
 }
 
+static object_t *
+bif_vector_pop_back(object_t *vector)
+{
+    assert(vector->type == OBJECT_VECTOR);
+    object_t *top = vector_back(vector->u.vector);
+    vector_pop_back(vector->u.vector);
+    return top;
+}
+
+static object_t *
+bif_vector_push_back(object_t *vector, object_t *value)
+{
+    assert(vector->type == OBJECT_VECTOR);
+    vector_push_back(vector->u.vector, value);
+    return vector;
+}
+
 void
 bif_init(env_t **env, vector_t **vec)
 {
@@ -97,8 +120,11 @@ bif_init(env_t **env, vector_t **vec)
             { .name = "code-char", .impl = (void *)bif_code2char, .arity = 1 },
             { .name = "eq", .impl = (void *)bif_eq, .arity = 2 },
             { .name = "make-map", .impl = (void *)bif_make_map, .arity = 0 },
+            { .name = "make-vector", .impl = (void *)bif_make_vector, .arity = 0 },
             { .name = "map-get", .impl = (void *)bif_map_get, .arity = 2 },
             { .name = "map-set", .impl = (void *)bif_map_set, .arity = 3 },
+            { .name = "vector-pop", .impl = (void *)bif_vector_pop_back, .arity = 1 },
+            { .name = "vector-push", .impl = (void *)bif_vector_push_back, .arity = 2 },
     };
     int len = sizeof(bif) / sizeof(*bif);
     // 初始化编译器环境
