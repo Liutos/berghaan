@@ -9,7 +9,7 @@ typedef bool (*cmp_fun_t)(const void *, const void *);
 typedef unsigned int (*hash_fun_t)(const void *);
 
 typedef struct _slot_t {
-    char *key;
+    void *key;
     void *value;
     struct _slot_t *next;
 } slot_t;

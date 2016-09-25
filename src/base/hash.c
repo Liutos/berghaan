@@ -96,7 +96,7 @@ hash_table_set(hash_table_t *tbl, const void *key, void *value)
     }
     unsigned int index = compute_index(tbl, key);
     slot = calloc(1, sizeof(slot_t));
-    slot->key = strdup(key);
+    slot->key = key;
     slot->value = value;
     slot->next = tbl->pool[index];
     tbl->pool[index] = slot;

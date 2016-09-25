@@ -70,6 +70,21 @@ bif_make_map(void)
     return object_map_new();
 }
 
+static object_t *
+bif_map_get(object_t *map, object_t *key)
+{
+    assert(map->type == OBJECT_MAP);
+    return hash_table_get(map->u.map, key);
+}
+
+static object_t *
+bif_map_set(object_t *map, object_t *key, object_t *value)
+{
+    assert(map->type == OBJECT_MAP);
+    hash_table_set(map->u.map, key, value);
+    return value;
+}
+
 void
 bif_init(env_t **env, vector_t **vec)
 {
@@ -82,6 +97,8 @@ bif_init(env_t **env, vector_t **vec)
             { .name = "code-char", .impl = (void *)bif_code2char, .arity = 1 },
             { .name = "eq", .impl = (void *)bif_eq, .arity = 2 },
             { .name = "make-map", .impl = (void *)bif_make_map, .arity = 0 },
+            { .name = "map-get", .impl = (void *)bif_map_get, .arity = 2 },
+            { .name = "map-set", .impl = (void *)bif_map_set, .arity = 3 },
     };
     int len = sizeof(bif) / sizeof(*bif);
     // 初始化编译器环境

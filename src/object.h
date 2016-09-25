@@ -63,4 +63,5 @@ extern object_t *object_int_new(int);
 extern object_t *object_map_new(void);
 extern object_t *object_nil_new(void);
 extern object_t *object_symbol_new(const char *);
+extern object_t *object_symbol_intern(const char *);
 extern void object_print(object_t *);

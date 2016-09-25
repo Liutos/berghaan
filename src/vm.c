@@ -71,7 +71,7 @@ vm_call_native(vm_t *vm, object_t *f)
     assert(f->type == OBJECT_FUN && OBJECT_FUN_TYPE(f) == FUN_NATIVE);
     object_t *result;
     void *impl = OBJECT_FUN_NATIVE_IMPL(f);
-    object_t *arg0, *arg1;
+    object_t *arg0, *arg1, *arg2;
     switch (OBJECT_FUN_NATIVE_ARITY(f)) {
         case 0:
             result = ((bif_0_t)impl)();
@@ -84,6 +84,12 @@ vm_call_native(vm_t *vm, object_t *f)
             arg1 = vm_pop_data(vm);
             arg0 = vm_pop_data(vm);
             result = ((bif_2_t)impl)(arg0, arg1);
+            break;
+        case 3:
+            arg2 = vm_pop_data(vm);
+            arg1 = vm_pop_data(vm);
+            arg0 = vm_pop_data(vm);
+            result = ((bif_3_t)impl)(arg0, arg1, arg2);
             break;
         default :
             exit(EXIT_FAILURE);
