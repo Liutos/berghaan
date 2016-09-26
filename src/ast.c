@@ -1,6 +1,7 @@
 #include "ast.h"
 #include "base/list.h"
 #include "base/utils.h"
+#include "base/utf8.h"
 #include "base/vector.h"
 
 #include <assert.h>
@@ -22,6 +23,21 @@ ast_bool_print(ast_t *b, FILE *out)
 {
     assert(b->type == AST_BOOL);
     fprintf(out, "%s", AST_BOOL_VALUE(b) ? "true" : "false");
+}
+
+static void
+ast_char_print(ast_t *c, FILE *out)
+{
+    assert(c->type == AST_CHAR);
+    fprintf(out, "'");
+    utf8_fprintf(out, AST_CHAR_VALUE(c));
+    fprintf(out, "'");
+}
+
+static void
+ast_char_dfs(ast_t *c)
+{
+    ast_char_print(c, stdout);
 }
 
 static void
@@ -129,6 +145,14 @@ ast_bool_new(bool value)
 }
 
 ast_t *
+ast_char_new(uint32_t value)
+{
+    ast_t *c = ast_new(AST_CHAR);
+    AST_CHAR_VALUE(c) = value;
+    return c;
+}
+
+ast_t *
 ast_cons_new(ast_t *car, ast_t *cdr)
 {
     ast_t *cons = calloc(1, sizeof(ast_t));
@@ -194,6 +218,9 @@ ast_dfs(ast_t *x)
         case AST_BOOL:
             ast_bool_dfs(x);
             break;
+        case AST_CHAR:
+            ast_char_dfs(x);
+            break;
         case AST_CONS:
             ast_cons_dfs(x);
             break;
@@ -218,6 +245,9 @@ ast_print(ast_t *x, FILE *out)
     switch (x->type) {
         case AST_BOOL:
             ast_bool_print(x, out);
+            break;
+        case AST_CHAR:
+            ast_char_print(x, out);
             break;
         case AST_CONS:
             ast_cons_print(x, out);

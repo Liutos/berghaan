@@ -1,4 +1,5 @@
 #include "ast.h"
+#include "base/utf8.h"
 #include "lexer.h"
 #include "parser.h"
 
@@ -15,7 +16,7 @@ static ast_t *list(parser_t *);
 static bool
 is_atom(TOKEN_T token)
 {
-    return token == TOKEN_BOOL || token == TOKEN_ID || token == TOKEN_INT || token == TOKEN_SYMBOL;
+    return token == TOKEN_BOOL || token == TOKEN_CHAR || token == TOKEN_ID || token == TOKEN_INT || token == TOKEN_SYMBOL;
 }
 
 static char *
@@ -55,6 +56,10 @@ expr(parser_t *parser)
     if (token == TOKEN_BOOL) {
         char *text = parser_match(parser, TOKEN_BOOL);
         return ast_bool_new(strcmp(text, "true") == 0);
+    } if (token == TOKEN_CHAR) {
+        char *text = parser_match(parser, TOKEN_CHAR);
+        uint32_t value = utf8_sread(&text[1], NULL);
+        return ast_char_new(value);
     } if (token == TOKEN_ID) {
         char *name = parser_match(parser, TOKEN_ID);
         return ast_id_new(name);

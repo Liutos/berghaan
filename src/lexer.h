@@ -7,6 +7,7 @@
 
 typedef enum {
     TOKEN_BOOL,
+    TOKEN_CHAR,
     TOKEN_END,
     TOKEN_ID,
     TOKEN_INT,

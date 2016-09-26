@@ -26,6 +26,13 @@ is_bool(char *s)
 }
 
 static bool
+is_char(const char *s)
+{
+    size_t length = strlen(s);
+    return length > 2 && s[0] == '\'' && s[length - 1] == '\'';
+}
+
+static bool
 is_integer(char *s)
 {
     for (int i = 0; s[i] != '\0'; i++) {
@@ -52,6 +59,8 @@ lexer_next_id(lexer_t *lexer)
     }
     if (is_bool(lexer->token->data))
         return TOKEN_BOOL;
+    if (is_char(lexer->token->data))
+        return TOKEN_CHAR;
     if (is_integer(lexer->token->data))
         return TOKEN_INT;
     if (is_symbol(lexer->token->data))
