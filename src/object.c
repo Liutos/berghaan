@@ -20,7 +20,9 @@ static void
 object_char_print(object_t *c)
 {
     assert(c->type == OBJECT_CHAR);
+    printf("'");
     utf8_fprintf(stdout, OBJECT_CHAR_VALUE(c));
+    printf("'");
 }
 
 static void

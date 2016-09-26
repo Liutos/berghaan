@@ -1,3 +1,5 @@
 (code-char 97)
 
 (code-char 27721)
+
+(char-code '汉')

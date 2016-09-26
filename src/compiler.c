@@ -174,6 +174,9 @@ compiler_compile_any(code_t *s, ast_t *x, env_t *env)
         case AST_BOOL:
             emit(s, OP_NEW1(OP_PUSH, object_bool_new(AST_BOOL_VALUE(x))));
             break;
+        case AST_CHAR:
+            emit(s, OP_NEW1(OP_PUSH, object_char_new(AST_CHAR_VALUE(x))));
+            break;
         case AST_CONS:
             compiler_compile_cons(s, x, env);
             break;

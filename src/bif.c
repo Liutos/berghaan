@@ -52,6 +52,13 @@ bif_equal(object_t *lhs, object_t *rhs)
 }
 
 static object_t *
+bif_char2code(object_t *c)
+{
+    assert(c->type == OBJECT_CHAR);
+    return object_int_new(OBJECT_CHAR_VALUE(c));
+}
+
+static object_t *
 bif_code2char(object_t *num)
 {
     assert(num->type == OBJECT_INT);
@@ -117,6 +124,7 @@ bif_init(env_t **env, vector_t **vec)
             { .name = "*", .impl = (void *)bif_mul, .arity = 2 },
             { .name = "/", .impl = (void *)bif_div, .arity = 2 },
             { .name = "=", .impl = (void *)bif_equal, .arity = 2 },
+            { .name = "char-code", .impl = (void *)bif_char2code, .arity = 1 },
             { .name = "code-char", .impl = (void *)bif_code2char, .arity = 1 },
             { .name = "eq", .impl = (void *)bif_eq, .arity = 2 },
             { .name = "make-map", .impl = (void *)bif_make_map, .arity = 0 },
