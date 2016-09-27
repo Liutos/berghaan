@@ -12,7 +12,7 @@ typedef struct {
 } bif_t;
 
 static object_t *
-bif_add(object_t *lhs, object_t *rhs)
+bif_add(vm_t *vm, object_t *lhs, object_t *rhs)
 {
     assert(lhs->type == OBJECT_INT);
     assert(rhs->type == OBJECT_INT);
@@ -20,7 +20,7 @@ bif_add(object_t *lhs, object_t *rhs)
 }
 
 static object_t *
-bif_sub(object_t *lhs, object_t *rhs)
+bif_sub(vm_t *vm, object_t *lhs, object_t *rhs)
 {
     assert(lhs->type == OBJECT_INT);
     assert(rhs->type == OBJECT_INT);
@@ -28,7 +28,7 @@ bif_sub(object_t *lhs, object_t *rhs)
 }
 
 static object_t *
-bif_mul(object_t *lhs, object_t *rhs)
+bif_mul(vm_t *vm, object_t *lhs, object_t *rhs)
 {
     assert(lhs->type == OBJECT_INT);
     assert(rhs->type == OBJECT_INT);
@@ -36,7 +36,7 @@ bif_mul(object_t *lhs, object_t *rhs)
 }
 
 static object_t *
-bif_div(object_t *lhs, object_t *rhs)
+bif_div(vm_t *vm, object_t *lhs, object_t *rhs)
 {
     assert(lhs->type == OBJECT_INT);
     assert(rhs->type == OBJECT_INT);
@@ -44,7 +44,7 @@ bif_div(object_t *lhs, object_t *rhs)
 }
 
 static object_t *
-bif_equal(object_t *lhs, object_t *rhs)
+bif_equal(vm_t *vm, object_t *lhs, object_t *rhs)
 {
     assert(lhs->type == OBJECT_INT);
     assert(rhs->type == OBJECT_INT);
@@ -52,46 +52,46 @@ bif_equal(object_t *lhs, object_t *rhs)
 }
 
 static object_t *
-bif_char2code(object_t *c)
+bif_char2code(vm_t *vm, object_t *c)
 {
     assert(c->type == OBJECT_CHAR);
     return object_int_new(OBJECT_CHAR_VALUE(c));
 }
 
 static object_t *
-bif_code2char(object_t *num)
+bif_code2char(vm_t *vm, object_t *num)
 {
     assert(num->type == OBJECT_INT);
     return object_char_new(OBJECT_INT_VALUE(num));
 }
 
 static object_t *
-bif_eq(object_t *x, object_t *y)
+bif_eq(vm_t *vm, object_t *x, object_t *y)
 {
     return object_bool_new(x == y);
 }
 
 static object_t *
-bif_make_map(void)
+bif_make_map(vm_t *vm)
 {
     return object_map_new();
 }
 
 static object_t *
-bif_make_vector(void)
+bif_make_vector(vm_t *vm)
 {
     return object_vector_new();
 }
 
 static object_t *
-bif_map_get(object_t *map, object_t *key)
+bif_map_get(vm_t *vm, object_t *map, object_t *key)
 {
     assert(map->type == OBJECT_MAP);
     return hash_table_get(map->u.map, key);
 }
 
 static object_t *
-bif_map_set(object_t *map, object_t *key, object_t *value)
+bif_map_set(vm_t *vm, object_t *map, object_t *key, object_t *value)
 {
     assert(map->type == OBJECT_MAP);
     hash_table_set(map->u.map, key, value);
@@ -99,7 +99,7 @@ bif_map_set(object_t *map, object_t *key, object_t *value)
 }
 
 static object_t *
-bif_vector_pop_back(object_t *vector)
+bif_vector_pop_back(vm_t *vm, object_t *vector)
 {
     assert(vector->type == OBJECT_VECTOR);
     object_t *top = vector_back(vector->u.vector);
@@ -108,7 +108,7 @@ bif_vector_pop_back(object_t *vector)
 }
 
 static object_t *
-bif_vector_push_back(object_t *vector, object_t *value)
+bif_vector_push_back(vm_t *vm, object_t *vector, object_t *value)
 {
     assert(vector->type == OBJECT_VECTOR);
     vector_push_back(vector->u.vector, value);

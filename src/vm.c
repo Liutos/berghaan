@@ -74,22 +74,22 @@ vm_call_native(vm_t *vm, object_t *f)
     object_t *arg0, *arg1, *arg2;
     switch (OBJECT_FUN_NATIVE_ARITY(f)) {
         case 0:
-            result = ((bif_0_t)impl)();
+            result = ((bif_0_t)impl)(vm);
             break;
         case 1:
             arg0 = vm_pop_data(vm);
-            result = ((bif_1_t)impl)(arg0);
+            result = ((bif_1_t)impl)(vm, arg0);
             break;
         case 2:
             arg1 = vm_pop_data(vm);
             arg0 = vm_pop_data(vm);
-            result = ((bif_2_t)impl)(arg0, arg1);
+            result = ((bif_2_t)impl)(vm, arg0, arg1);
             break;
         case 3:
             arg2 = vm_pop_data(vm);
             arg1 = vm_pop_data(vm);
             arg0 = vm_pop_data(vm);
-            result = ((bif_3_t)impl)(arg0, arg1, arg2);
+            result = ((bif_3_t)impl)(vm, arg0, arg1, arg2);
             break;
         default :
             exit(EXIT_FAILURE);
