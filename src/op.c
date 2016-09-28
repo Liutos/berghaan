@@ -58,7 +58,7 @@ op_print(op_t *op, FILE *out)
             fprintf(out, " %"PRIiPTR, OP_ARG_ARITY(op));
             break;
         case OP_FUN:
-            fprintf(out, " %"PRIiPTR, (intptr_t)OP_FUN_NAME(op));
+            fprintf(out, " %"PRIiPTR" ; %s", (intptr_t)OP_FUN_NAME(op), (const char *)OP_ARG1(op));
             break;
         case OP_GENV:
             fprintf(out, " %"PRIiPTR, OP_ARG0(op));
@@ -70,7 +70,7 @@ op_print(op_t *op, FILE *out)
             fprintf(out, " %"PRIiPTR" %"PRIiPTR, OP_GSET_X(op), OP_GSET_Y(op));
             break;
         case OP_JUMP:
-            fprintf(out, " %"PRIiPTR, (intptr_t)OP_JUMP_LABEL(op));
+            fprintf(out, " %"PRIiPTR" ; %s", (intptr_t)OP_JUMP_LABEL(op), (const char *)OP_ARG1(op));
             break;
         case OP_LABEL:
             fprintf(out, "%s:", OP_LABEL_NAME(op));
@@ -79,7 +79,7 @@ op_print(op_t *op, FILE *out)
             fprintf(out, " %"PRIiPTR" %"PRIiPTR, OP_REF_X(op), OP_REF_Y(op));
             break;
         case OP_TJUMP:
-            fprintf(out, " %"PRIiPTR, (intptr_t)OP_TJUMP_LABEL(op));
+            fprintf(out, " %"PRIiPTR" ; %s", (intptr_t)OP_TJUMP_LABEL(op), (const char *)OP_ARG1(op));
             break;
         default :;
     }

@@ -36,6 +36,7 @@ code_t *relocate(code_t *code)
                 name = (const char *)OP_ARG0(op);
                 offset = (int)assoc_list_search(map, name);
                 OP_ARG0(op) = (intptr_t)offset;
+                OP_ARG1(op) = (intptr_t)name;
                 emit(ins, op);
                 break;
             default :
