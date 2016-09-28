@@ -147,12 +147,13 @@ compiler_compile_id(code_t *s, ast_t *id, env_t *env)
 {
     assert(id->type == AST_ID);
     int x, y;
-    bool is_found = env_position(env, AST_ID_NAME(id), &x, &y);
+    const char *name = AST_ID_NAME(id);
+    bool is_found = env_position(env, name, &x, &y);
     if (is_found) {
-        emit(s, OP_NEW2(OP_REF, x, y));
+        emit(s, OP_NEW3(OP_REF, x, y, name));
     } else {
-        assert(env_position(toplevel_env, AST_ID_NAME(id), &x, &y) == true);
-        emit(s, OP_NEW2(OP_GREF, x, y));
+        assert(env_position(toplevel_env, name, &x, &y) == true);
+        emit(s, OP_NEW3(OP_GREF, x, y, name));
     }
 }
 

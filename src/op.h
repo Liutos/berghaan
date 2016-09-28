@@ -36,6 +36,7 @@ typedef struct {
     OP_T type;
     intptr_t arg0;
     intptr_t arg1;
+    intptr_t arg2;
 } op_t;
 
 typedef vector_t code_t;
@@ -54,12 +55,15 @@ extern op_t *code_at(code_t *, size_t);
 #define OP_NEW0(t) op_new0(t)
 #define OP_NEW1(t, a0) op_new1(t, (intptr_t)a0)
 #define OP_NEW2(t, a0, a1) op_new2(t, (intptr_t)a0, (intptr_t)a1)
+#define OP_NEW3(t, a0, a1, a2) op_new3(t, (intptr_t)a0, (intptr_t)a1, (intptr_t)a2)
 #define OP_ARG0(x) ((x)->arg0)
 #define OP_ARG1(x) ((x)->arg1)
+#define OP_ARG2(x) ((x)->arg2)
 #define OP_ARG_ARITY(x) OP_ARG0(x)
 #define OP_FUN_NAME(x) ((const char *)OP_ARG0(x))
 #define OP_GREF_X(x) OP_ARG0(x)
 #define OP_GREF_Y(x) OP_ARG1(x)
+#define OP_GREF_NAME(x) OP_ARG2(x)
 #define OP_GSET_X(x) OP_ARG0(x)
 #define OP_GSET_Y(x) OP_ARG1(x)
 #define OP_JUMP_LABEL(x) ((const char *)OP_ARG0(x))
@@ -67,6 +71,7 @@ extern op_t *code_at(code_t *, size_t);
 #define OP_PUSH_TARGET(x) OP_ARG0(x)
 #define OP_REF_X(x) OP_ARG0(x)
 #define OP_REF_Y(x) OP_ARG1(x)
+#define OP_REF_NAME(x) OP_ARG2(x)
 #define OP_TJUMP_LABEL(x) ((const char *)OP_ARG0(x))
 
 #define code_new vector_new

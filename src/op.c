@@ -39,6 +39,14 @@ op_new2(OP_T type, intptr_t arg0, intptr_t arg1)
 }
 
 op_t *
+op_new3(OP_T type, intptr_t arg0, intptr_t arg1, intptr_t arg2)
+{
+    op_t *op = op_new2(type, arg0, arg1);
+    op->arg2 = arg2;
+    return op;
+}
+
+op_t *
 op_next_label(const char *prefix)
 {
     static int counter = 0;
@@ -64,7 +72,7 @@ op_print(op_t *op, FILE *out)
             fprintf(out, " %"PRIiPTR, OP_ARG0(op));
             break;
         case OP_GREF:
-            fprintf(out, " %"PRIiPTR" %"PRIiPTR, OP_GREF_X(op), OP_GREF_Y(op));
+            fprintf(out, " %"PRIiPTR" %"PRIiPTR" ; %s", OP_GREF_X(op), OP_GREF_Y(op), OP_GREF_NAME(op));
             break;
         case OP_GSET:
             fprintf(out, " %"PRIiPTR" %"PRIiPTR, OP_GSET_X(op), OP_GSET_Y(op));
@@ -76,7 +84,7 @@ op_print(op_t *op, FILE *out)
             fprintf(out, "%s:", OP_LABEL_NAME(op));
             break;
         case OP_REF:
-            fprintf(out, " %"PRIiPTR" %"PRIiPTR, OP_REF_X(op), OP_REF_Y(op));
+            fprintf(out, " %"PRIiPTR" %"PRIiPTR" ; %s", OP_REF_X(op), OP_REF_Y(op), OP_REF_NAME(op));
             break;
         case OP_TJUMP:
             fprintf(out, " %"PRIiPTR" ; %s", (intptr_t)OP_TJUMP_LABEL(op), (const char *)OP_ARG1(op));
