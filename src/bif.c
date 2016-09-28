@@ -40,6 +40,11 @@ bif_div(vm_t *vm, object_t *lhs, object_t *rhs)
 {
     assert(lhs->type == OBJECT_INT);
     assert(rhs->type == OBJECT_INT);
+    if (OBJECT_INT_VALUE(rhs) == 0) {
+        vm->erroneous = true;
+        vm->error = error_new("除数为0");
+        return NULL;
+    }
     return object_int_new(OBJECT_INT_VALUE(lhs) / OBJECT_INT_VALUE(rhs));
 }
 

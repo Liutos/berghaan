@@ -94,13 +94,28 @@ vm_call_native(vm_t *vm, object_t *f)
         default :
             exit(EXIT_FAILURE);
     }
+    if (vm->erroneous) {
+        fprintf(stderr, "%s\n", vm->error->message->data);
+        exit(EXIT_FAILURE);
+    }
     vm_push_data(vm, result);
+}
+
+error_t *
+error_new(const char *message)
+{
+    error_t *e = calloc(1, sizeof(error_t));
+    e->message = string_new();
+    string_append(e->message, message);
+    return e;
 }
 
 vm_t *
 vm_new(void)
 {
     vm_t *vm = calloc(1, sizeof(vm_t));
+    vm->erroneous = false;
+    vm->error = NULL;
     vm->env = NULL;
     vm->data_stack = vector_new();
     vm->frame_stack = vector_new();
