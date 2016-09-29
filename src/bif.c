@@ -11,10 +11,19 @@ typedef struct {
     int arity;
 } bif_t;
 
+#define EXPECT_TYPE(vm, x, target) \
+    do { \
+        assert(x != NULL); \
+        if (x->type != target) { \
+            vm->erroneous = true; \
+            vm->error = error_new("类型不匹配"); \
+        } \
+    } while (0)
+
 static object_t *
 bif_add(vm_t *vm, object_t *lhs, object_t *rhs)
 {
-    assert(lhs->type == OBJECT_INT);
+    EXPECT_TYPE(vm, lhs, OBJECT_INT);
     assert(rhs->type == OBJECT_INT);
     return object_int_new(OBJECT_INT_VALUE(lhs) + OBJECT_INT_VALUE(rhs));
 }
