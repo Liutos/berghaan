@@ -88,6 +88,7 @@ compile_funcall(code_t *s, ast_t *x, env_t *env)
     // 编译函数
     compiler_compile_any(s, fun, env);
     emit(s, OP_NEW0(OP_CALL));
+    emit(s, OP_NEW0(OP_TUNWIND));
 }
 
 static void

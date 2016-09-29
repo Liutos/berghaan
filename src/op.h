@@ -25,7 +25,8 @@
     op(OP_PUSH), \
     op(OP_REF), \
     op(OP_RET), \
-    op(OP_TJUMP),
+    op(OP_TJUMP), \
+    op(OP_TUNWIND),
 #define STRINGIFY(x) #x
 
 typedef enum {

@@ -94,10 +94,6 @@ vm_call_native(vm_t *vm, object_t *f)
         default :
             exit(EXIT_FAILURE);
     }
-    if (vm->erroneous) {
-        fprintf(stderr, "%s\n", vm->error->message->data);
-        exit(EXIT_FAILURE);
-    }
     vm_push_data(vm, result);
 }
 
@@ -214,6 +210,18 @@ vm_execute(vm_t *vm, vector_t *code)
                 else
                     pc++;
                 break;
+            case OP_TUNWIND:
+                if (vm->erroneous) {
+                    if (vm->frame_stack->length > 0) {
+                        printf("展开栈\n");
+                        frame = vm_pop_frame(vm);
+                        pc = frame->pc;
+                    } else {
+                        fprintf(stderr, "%s\n", vm->error->message->data);
+                        exit(EXIT_FAILURE);
+                    }
+                }
+                NEXT;
             default :
                 printf("Undefined instruction: %s\n", op_name(op));
                 exit(EXIT_FAILURE);
