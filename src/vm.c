@@ -98,9 +98,10 @@ vm_call_native(vm_t *vm, object_t *f)
 }
 
 error_t *
-error_new(const char *message)
+error_new(const char *launcher, const char *message)
 {
     error_t *e = calloc(1, sizeof(error_t));
+    e->launcher = launcher;
     e->message = string_new();
     string_append(e->message, message);
     return e;
@@ -217,7 +218,7 @@ vm_execute(vm_t *vm, vector_t *code)
                         frame = vm_pop_frame(vm);
                         pc = frame->pc;
                     } else {
-                        fprintf(stderr, "%s\n", vm->error->message->data);
+                        fprintf(stderr, "%s: %s\n", vm->error->launcher, vm->error->message->data);
                         exit(EXIT_FAILURE);
                     }
                 }

@@ -16,7 +16,9 @@ typedef struct {
         assert(x != NULL); \
         if (x->type != target) { \
             vm->erroneous = true; \
-            vm->error = error_new("类型不匹配"); \
+            char message[256] = {0}; \
+            snprintf(message, sizeof(message), "类型不匹配。期望`%d`(%s)，但收到了`%d`", target, #x, x->type); \
+            vm->error = error_new(__func__, message); \
         } \
     } while (0)
 
@@ -51,7 +53,7 @@ bif_div(vm_t *vm, object_t *lhs, object_t *rhs)
     assert(rhs->type == OBJECT_INT);
     if (OBJECT_INT_VALUE(rhs) == 0) {
         vm->erroneous = true;
-        vm->error = error_new("除数为0");
+        vm->error = error_new(__func__, "除数为0");
         return NULL;
     }
     return object_int_new(OBJECT_INT_VALUE(lhs) / OBJECT_INT_VALUE(rhs));

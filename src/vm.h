@@ -10,6 +10,7 @@
 #include <stdbool.h>
 
 typedef struct {
+    char *launcher;
     string_t *message;
 } error_t;
 
@@ -23,6 +24,6 @@ typedef struct {
 
 extern vector_t *toplevel_vec;
 
-extern error_t *error_new(const char *);
+extern error_t *error_new(const char *, const char *);
 extern vm_t *vm_new(void);
 extern void vm_execute(vm_t *, vector_t *);
