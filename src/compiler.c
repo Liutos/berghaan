@@ -79,6 +79,26 @@ compile_defun(code_t *s, ast_t *args, env_t *env)
 }
 
 static void
+compile_fun(code_t *s, ast_t *x, env_t *env)
+{
+    static int counter = 0;
+    // 生成不重复的函数名
+    char text[256] = {0};
+    snprintf(text, sizeof(text), "(fun_%d)", counter);
+    counter++;
+    const char *name = strdup(text);
+    // 声明函数名
+    env_push_back(toplevel_env, name, NULL);
+    // 构造defun表达式
+    ast_t *fun = ast_id_new(name);
+    x = ast_cons_new(fun, x);
+    compile_defun(s, x, env);
+    // 创建函数对象
+    emit(s, OP_NEW1(OP_FUN, name));
+
+}
+
+static void
 compile_funcall(code_t *s, ast_t *x, env_t *env)
 {
     ast_t *fun = AST_CONS_CAR(x);
@@ -136,6 +156,8 @@ compiler_compile_cons(code_t *s, ast_t *x, env_t *env)
         compile_set(s, AST_CONS_CDR(x), env);
     } else if (utils_str_equal(name, "defun")) {
         compile_defun(s, AST_CONS_CDR(x), env);
+    } else if (utils_str_equal(name, "fun")) {
+        compile_fun(s, AST_CONS_CDR(x), env);
     } else if (utils_str_equal(name, "if")) {
         compile_if(s, AST_CONS_CDR(x), env);
     } else {

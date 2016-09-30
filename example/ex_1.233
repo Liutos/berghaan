@@ -1,8 +1,8 @@
 (set a 1)
 
-(defun foo (x) (set a x))
+(set fn (fun (x) (set a x)))
 
-(defun bar (y) (foo y))
+(defun bar (y) (fn y))
 
 (bar 233)
 
