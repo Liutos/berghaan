@@ -115,6 +115,13 @@ bif_map_set(vm_t *vm, object_t *map, object_t *key, object_t *value)
 }
 
 static object_t *
+bif_vector_is_empty(vm_t *vm, object_t *vector)
+{
+    EXPECT_TYPE(vm, vector, OBJECT_VECTOR);
+    return object_bool_new(vector_is_empty(vector->u.vector));
+}
+
+static object_t *
 bif_vector_pop_back(vm_t *vm, object_t *vector)
 {
     assert(vector->type == OBJECT_VECTOR);
@@ -147,6 +154,7 @@ bif_init(env_t **env, vector_t **vec)
             { .name = "make-vector", .impl = (void *)bif_make_vector, .arity = 0 },
             { .name = "map-get", .impl = (void *)bif_map_get, .arity = 2 },
             { .name = "map-set", .impl = (void *)bif_map_set, .arity = 3 },
+            { .name = "vector-is-empty?", .impl = (void *)bif_vector_is_empty, .arity = 1 },
             { .name = "vector-pop", .impl = (void *)bif_vector_pop_back, .arity = 1 },
             { .name = "vector-push", .impl = (void *)bif_vector_push_back, .arity = 2 },
     };

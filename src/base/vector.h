@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include <stdbool.h>
 #include <stddef.h>
 
 typedef struct {
@@ -11,6 +12,7 @@ typedef struct {
     void **data;
 } vector_t;
 
+extern bool vector_is_empty(vector_t *);
 extern vector_t *vector_new(void);
 extern vector_t *vector_concat(vector_t *, vector_t *);
 extern void *vector_at(vector_t *, size_t);

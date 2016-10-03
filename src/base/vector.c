@@ -4,6 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+bool
+vector_is_empty(vector_t *v)
+{
+    return v->length == 0;
+}
+
 vector_t *
 vector_new(void)
 {

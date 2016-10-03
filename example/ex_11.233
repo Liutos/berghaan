@@ -3,3 +3,5 @@
 (vector-push vector :hello)
 
 (vector-pop vector)
+
+(vector-is-empty? vector)
