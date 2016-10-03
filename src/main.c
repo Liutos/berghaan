@@ -1,5 +1,6 @@
 #include "assembler.h"
 #include "ast.h"
+#include "base/log.h"
 #include "base/string.h"
 #include "bif.h"
 #include "compiler.h"
@@ -9,10 +10,12 @@
 #include "vm.h"
 
 #include <stdio.h>
+#include <syslog.h>
 
 int
 main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
+    log_open();
     // 读取标准输入
     string_t *s = string_new();
     char part[256] = {0};
@@ -37,5 +40,6 @@ main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
     // 交给虚拟机执行
     vm_t *vm = vm_new();
     vm_execute(vm, ins);
+    log_close();
     return 0;
 }

@@ -1,4 +1,5 @@
 #include "ast.h"
+#include "base/log.h"
 #include "base/utf8.h"
 #include "lexer.h"
 #include "parser.h"
@@ -8,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <syslog.h>
 
 static ast_t *expr_list(parser_t *);
 static ast_t *expr(parser_t *);
@@ -25,10 +27,10 @@ parser_match(parser_t *parser, TOKEN_T type)
     lexer_t *lexer = parser->lexer;
     TOKEN_T token = lexer_next(lexer);
     if (token == type) {
-        printf("MATCH '%s'\n", lexer->token->data);
+        log_lprintf(LOG_DEBUG, "MATCH '%s'\n", lexer->token->data);
         return lexer->token->data;
     } else {
-        printf("DISMATCH '%s'\n", lexer->token->data);
+        log_lprintf(LOG_DEBUG, "DISMATCH '%s'\n", lexer->token->data);
         exit(EXIT_FAILURE);
     }
 }

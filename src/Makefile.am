@@ -3,6 +3,7 @@ main_SOURCES = \
     assembler.c \
     base/string.c \
     base/list.c \
+    base/log.c \
     base/hash.c \
     base/utf8.c \
     base/utils.c \
