@@ -93,6 +93,7 @@ compile_fun(code_t *s, ast_t *x, env_t *env)
     ast_t *fun = ast_id_new(name);
     x = ast_cons_new(fun, x);
     compile_defun(s, x, env);
+    emit(s, OP_NEW0(OP_POP));
     // 创建函数对象
     emit(s, OP_NEW1(OP_FUN, name));
 
@@ -158,18 +159,22 @@ compiler_compile_cons(code_t *s, ast_t *x, env_t *env)
 {
     assert(x->type == AST_CONS);
     ast_t *op = AST_CONS_CAR(x);
-    assert(op->type == AST_ID);
-    char *name = AST_ID_NAME(op);
-    if (utils_str_equal(name, "set")) {
-        compile_set(s, AST_CONS_CDR(x), env);
-    } else if (utils_str_equal(name, "defun")) {
-        compile_defun(s, AST_CONS_CDR(x), env);
-    } else if (utils_str_equal(name, "fun")) {
-        compile_fun(s, AST_CONS_CDR(x), env);
-    } else if (utils_str_equal(name, "if")) {
-        compile_if(s, AST_CONS_CDR(x), env);
-    } else if (utils_str_equal(name, "return")) {
-        compile_return(s, AST_CONS_CDR(x), env);
+    if (op->type == AST_ID) {
+        assert(op->type == AST_ID);
+        char *name = AST_ID_NAME(op);
+        if (utils_str_equal(name, "set")) {
+            compile_set(s, AST_CONS_CDR(x), env);
+        } else if (utils_str_equal(name, "defun")) {
+            compile_defun(s, AST_CONS_CDR(x), env);
+        } else if (utils_str_equal(name, "fun")) {
+            compile_fun(s, AST_CONS_CDR(x), env);
+        } else if (utils_str_equal(name, "if")) {
+            compile_if(s, AST_CONS_CDR(x), env);
+        } else if (utils_str_equal(name, "return")) {
+            compile_return(s, AST_CONS_CDR(x), env);
+        } else {
+            compile_funcall(s, x, env);
+        }
     } else {
         compile_funcall(s, x, env);
     }
