@@ -129,6 +129,14 @@ compile_if(code_t *s, ast_t *args, env_t *env)
 }
 
 static void
+compile_return(code_t *s, ast_t *args, env_t *env)
+{
+    ast_t *expr = AST_CONS_1ST(args);
+    compiler_compile_any(s, expr, env);
+    emit(s, OP_NEW0(OP_RET));
+}
+
+static void
 compile_set(code_t *s, ast_t *args, env_t *env)
 {
     assert(args->type == AST_CONS);
@@ -160,6 +168,8 @@ compiler_compile_cons(code_t *s, ast_t *x, env_t *env)
         compile_fun(s, AST_CONS_CDR(x), env);
     } else if (utils_str_equal(name, "if")) {
         compile_if(s, AST_CONS_CDR(x), env);
+    } else if (utils_str_equal(name, "return")) {
+        compile_return(s, AST_CONS_CDR(x), env);
     } else {
         compile_funcall(s, x, env);
     }
