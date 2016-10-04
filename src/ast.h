@@ -55,6 +55,8 @@ typedef struct _ast_t {
 
 extern ast_t *ast_bool_new(bool);
 extern ast_t *ast_char_new(uint32_t);
+extern ast_t *ast_cons_map1(ast_t *);
+extern ast_t *ast_cons_map2(ast_t *);
 extern ast_t *ast_cons_new(ast_t *, ast_t *);
 extern ast_t *ast_id_new(const char *);
 extern ast_t *ast_int_new(int);

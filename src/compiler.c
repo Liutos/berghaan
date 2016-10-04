@@ -131,6 +131,22 @@ compile_if(code_t *s, ast_t *args, env_t *env)
 }
 
 static void
+compile_let(code_t *s, ast_t *args, env_t *env)
+{
+    // 将let表达式转换为等价的fun表达式及其调用
+    ast_t *bindings = AST_CONS_1ST(args);
+    ast_t *parameters = ast_cons_map1(bindings);
+    ast_t *exprs = ast_cons_map2(bindings);
+
+    ast_t *body = AST_CONS_CDR(args);
+    ast_t *fun = ast_cons_new(ast_id_new("fun"), ast_cons_new(parameters, body));
+    ast_t *nexpr = ast_cons_new(fun, exprs);
+
+    ast_print(nexpr, stdout);
+    compile_funcall(s, nexpr, env);
+}
+
+static void
 compile_progn(code_t *s, ast_t *args, env_t *env)
 {
     compile_sequence(s, args, env);
@@ -177,6 +193,8 @@ compiler_compile_cons(code_t *s, ast_t *x, env_t *env)
             compile_fun(s, AST_CONS_CDR(x), env);
         } else if (utils_str_equal(name, "if")) {
             compile_if(s, AST_CONS_CDR(x), env);
+        } else if (utils_str_equal(name, "let")) {
+            compile_let(s, AST_CONS_CDR(x), env);
         } else if (utils_str_equal(name, "progn")) {
             compile_progn(s, AST_CONS_CDR(x), env);
         } else if (utils_str_equal(name, "return")) {

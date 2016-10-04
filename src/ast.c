@@ -153,6 +153,32 @@ ast_char_new(uint32_t value)
 }
 
 ast_t *
+ast_cons_map1(ast_t *cons)
+{
+    if (cons == NULL) {
+        return NULL;
+    } else {
+        assert(cons->type == AST_CONS);
+        ast_t *car = AST_CONS_CAR(cons);
+        assert(car->type == AST_CONS);
+        return ast_cons_new(AST_CONS_1ST(car), ast_cons_map1(AST_CONS_CDR(cons)));
+    }
+}
+
+ast_t *
+ast_cons_map2(ast_t *cons)
+{
+    if (cons == NULL) {
+        return NULL;
+    } else {
+        assert(cons->type == AST_CONS);
+        ast_t *car = AST_CONS_CAR(cons);
+        assert(car->type == AST_CONS);
+        return ast_cons_new(AST_CONS_2ND(car), ast_cons_map2(AST_CONS_CDR(cons)));
+    }
+}
+
+ast_t *
 ast_cons_new(ast_t *car, ast_t *cdr)
 {
     ast_t *cons = calloc(1, sizeof(ast_t));
