@@ -130,6 +130,12 @@ compile_if(code_t *s, ast_t *args, env_t *env)
 }
 
 static void
+compile_progn(code_t *s, ast_t *args, env_t *env)
+{
+    compile_sequence(s, args, env);
+}
+
+static void
 compile_return(code_t *s, ast_t *args, env_t *env)
 {
     ast_t *expr = AST_CONS_1ST(args);
@@ -170,6 +176,8 @@ compiler_compile_cons(code_t *s, ast_t *x, env_t *env)
             compile_fun(s, AST_CONS_CDR(x), env);
         } else if (utils_str_equal(name, "if")) {
             compile_if(s, AST_CONS_CDR(x), env);
+        } else if (utils_str_equal(name, "progn")) {
+            compile_progn(s, AST_CONS_CDR(x), env);
         } else if (utils_str_equal(name, "return")) {
             compile_return(s, AST_CONS_CDR(x), env);
         } else {
