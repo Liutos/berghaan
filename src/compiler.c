@@ -40,13 +40,9 @@ compile_sequence(code_t *s, ast_t *body, env_t *env)
 }
 
 static void
-compile_defun(code_t *s, ast_t *args, env_t *env)
+compile_global_function(const char *name, ast_t *parameters, ast_t *body, env_t *env)
 {
-    ast_t *fun = AST_CONS_1ST(args);
-    ast_t *parameters = AST_CONS_2ND(args);
-    ast_t *body = AST_CONS_CDR(AST_CONS_CDR(args));
     // 写入标号
-    char *name = AST_ID_NAME(fun);
     emit(toplevel_defs, OP_NEW1(OP_LABEL, name));
     // 写入传参指令
     int arity = ast_cons_length(parameters);
@@ -64,6 +60,18 @@ compile_defun(code_t *s, ast_t *args, env_t *env)
     compile_sequence(toplevel_defs, body, nenv);
     // 写入返回指令
     emit(toplevel_defs, OP_NEW0(OP_RET));
+}
+
+static void
+compile_defun(code_t *s, ast_t *args, env_t *env)
+{
+    ast_t *fun = AST_CONS_1ST(args);
+    ast_t *parameters = AST_CONS_2ND(args);
+    ast_t *body = AST_CONS_CDR(AST_CONS_CDR(args));
+    char *name = AST_ID_NAME(fun);
+    int x, y;
+    assert(env_position(toplevel_env, name, &x, &y) == true);
+    compile_global_function(name, parameters, body, env);
     // 创建函数对象
     emit(s, OP_NEW1(OP_FUN, name));
     // 绑定到顶层环境
@@ -84,11 +92,9 @@ compile_fun(code_t *s, ast_t *x, env_t *env)
     const char *name = strdup(text);
     // 声明函数名
     env_push_back(toplevel_env, name, NULL);
-    // 构造defun表达式
-    ast_t *fun = ast_id_new(name);
-    x = ast_cons_new(fun, x);
-    compile_defun(s, x, env);
-    emit(s, OP_NEW0(OP_POP));
+    ast_t *parameters = AST_CONS_1ST(x);
+    ast_t *body = AST_CONS_CDR(x);
+    compile_global_function(name, parameters, body, env);
     // 创建函数对象
     emit(s, OP_NEW1(OP_FUN, name));
 
