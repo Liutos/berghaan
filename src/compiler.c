@@ -9,11 +9,6 @@
 #include <assert.h>
 #include <stdlib.h>
 
-typedef struct {
-    const char *name;
-    OP_T op;
-} bif_t;
-
 static void compiler_compile_any(code_t *, ast_t *, env_t *);
 
 env_t *toplevel_env = NULL;
