@@ -124,7 +124,7 @@ bif_vector_is_empty(vm_t *vm, object_t *vector)
 static object_t *
 bif_vector_pop_back(vm_t *vm, object_t *vector)
 {
-    assert(vector->type == OBJECT_VECTOR);
+    EXPECT_TYPE(vm, vector, OBJECT_VECTOR);
     object_t *top = vector_back(vector->u.vector);
     vector_pop_back(vector->u.vector);
     return top;
@@ -133,7 +133,7 @@ bif_vector_pop_back(vm_t *vm, object_t *vector)
 static object_t *
 bif_vector_push_back(vm_t *vm, object_t *vector, object_t *value)
 {
-    assert(vector->type == OBJECT_VECTOR);
+    EXPECT_TYPE(vm, vector, OBJECT_VECTOR);
     vector_push_back(vector->u.vector, value);
     return vector;
 }
@@ -167,7 +167,7 @@ bif_init(env_t **env, vector_t **vec)
     }
     // 初始化虚拟机存储
     vector_t *_vec = vector_new();
-    vector_reserve(_vec, len);
+    vector_reserve(_vec, len > 256 ? len : 256);
     for (int i = 0; i < len; i++) {
         object_t *f = object_fun_native_new(bif[i].arity, bif[i].impl);
         vector_push_back(_vec, f);

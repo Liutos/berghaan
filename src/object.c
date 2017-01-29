@@ -69,7 +69,15 @@ static void
 object_vector_print(object_t *v)
 {
     assert(v->type == OBJECT_VECTOR);
-    printf("[]");
+    printf("[");
+    vector_t *vector = v->u.vector;
+    for (int i = 0; i < vector->length; i++) {
+        object_print(vector_at(vector, i));
+        if (i != vector->length - 1) {
+            printf(", ");
+        }
+    }
+    printf("]");
 }
 
 static object_t *
