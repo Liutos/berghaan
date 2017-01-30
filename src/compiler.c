@@ -152,6 +152,8 @@ compile_let(code_t *s, ast_t *args, env_t *env)
     }
     // 编译绑定
     compile_sequence(s, body, nenv);
+    // 恢复环境
+    emit(s, OP_NEW0(OP_RENV));
 }
 
 static void

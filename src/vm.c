@@ -203,6 +203,9 @@ vm_execute(vm_t *vm, vector_t *code)
                 obj = vm_reference(vm, OP_REF_X(op), OP_REF_Y(op));
                 vm_push_data(vm, obj);
                 NEXT;
+            case OP_RENV:
+                vm->env = vm->env->outer;
+                NEXT;
             case OP_RET:
                 frame = vm_pop_frame(vm);
                 pc = frame->pc;

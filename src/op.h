@@ -24,6 +24,7 @@
     op(OP_PRINT), \
     op(OP_PUSH), \
     op(OP_REF), \
+    op(OP_RENV), \
     op(OP_RET), \
     op(OP_TJUMP), \
     op(OP_TUNWIND),
