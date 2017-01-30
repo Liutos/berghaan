@@ -33,7 +33,7 @@ env_new(env_t *outer)
 env_t *
 env_bind(env_t *env, const char *variable, object_t *value)
 {
-    env->bindings = assoc_list_push(env->bindings, variable, value);
+    env->bindings = assoc_list_push_back(env->bindings, variable, value);
     return env;
 }
 
