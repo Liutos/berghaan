@@ -1,3 +1,4 @@
+#include "base/log.h"
 #include "base/vector.h"
 #include "bif.h"
 #include "env.h"
@@ -10,6 +11,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <syslog.h>
 
 typedef struct {
     int pc;
@@ -132,6 +134,9 @@ vm_execute(vm_t *vm, vector_t *code)
         assert(pc < code->length);
         prev_pc = pc;
         op_t *op = vector_at(code, pc);
+
+        log_lprintf(LOG_DEBUG, "VM:EXECUTE:OPCODE %s at %d", op_name(op), pc);
+
         switch (op->type) {
             case OP_ARG:
                 // 创建存储空间
