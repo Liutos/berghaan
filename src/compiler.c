@@ -133,17 +133,25 @@ compile_if(code_t *s, ast_t *args, env_t *env)
 static void
 compile_let(code_t *s, ast_t *args, env_t *env)
 {
-    // 将let表达式转换为等价的fun表达式及其调用
     ast_t *bindings = AST_CONS_1ST(args);
     ast_t *parameters = ast_cons_map1(bindings);
     ast_t *exprs = ast_cons_map2(bindings);
 
     ast_t *body = AST_CONS_CDR(args);
-    ast_t *fun = ast_cons_new(ast_id_new("fun"), ast_cons_new(parameters, body));
-    ast_t *nexpr = ast_cons_new(fun, exprs);
-
-    ast_print(nexpr, stdout);
-    compile_funcall(s, nexpr, env);
+    // 编译表达式列表
+    compile_args(s, exprs, env);
+    // 写入传参指令
+    int arity = ast_cons_length(parameters);
+    emit(s, OP_NEW1(OP_ARG, arity));
+    // 扩展环境
+    env_t *nenv = env_new(env);
+    while (parameters != NULL) {
+        ast_t *par = AST_CONS_CAR(parameters);
+        env_bind(nenv, AST_ID_NAME(par), NULL);
+        parameters = AST_CONS_CDR(parameters);
+    }
+    // 编译绑定
+    compile_sequence(s, body, nenv);
 }
 
 static void

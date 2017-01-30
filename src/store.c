@@ -31,6 +31,7 @@ store_get(store_t *s, int x, int y)
     while (x > 0) {
         assert(s != NULL);
         s = s->outer;
+        x--;
     }
     return (object_t *)vector_at(s->pool, y);
 }
