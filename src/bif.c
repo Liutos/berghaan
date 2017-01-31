@@ -19,6 +19,7 @@ typedef struct {
             char message[256] = {0}; \
             snprintf(message, sizeof(message), "类型不匹配。期望`%d`(%s)，但收到了`%d`", target, #x, x->type); \
             vm->error = error_new(__func__, message); \
+            return NULL; \
         } \
     } while (0)
 

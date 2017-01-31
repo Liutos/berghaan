@@ -1,7 +1,18 @@
-(set vector (make-vector))
+(defun vector-length-rec (v backup)
+  (if (vector-is-empty? v)
+      0
+    (let ((x (vector-pop v)))
+      (vector-push backup x)
+      (let ((length (vector-length-rec v backup)))
+        (vector-push v (vector-pop backup))
+        (+ length 1)))))
 
-(vector-push vector :hello)
+(defun vector-length (v)
+  (vector-length-rec v (make-vector)))
 
-(vector-pop vector)
+(set v (make-vector))
 
-(vector-is-empty? vector)
+(vector-push v 1)
+(vector-push v 2)
+
+(vector-length v)
