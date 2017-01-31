@@ -207,6 +207,7 @@ vm_execute(vm_t *vm, vector_t *code)
                 vm->env = vm->env->outer;
                 NEXT;
             case OP_RET:
+                vm->env = vm->env->outer;
                 frame = vm_pop_frame(vm);
                 pc = frame->pc;
                 NEXT;
