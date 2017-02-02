@@ -21,3 +21,4 @@ install-sh
 main
 COPYING
 INSTALL
+src/compile
