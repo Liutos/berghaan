@@ -2,6 +2,7 @@
 
 #include <ctype.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -92,6 +93,18 @@ lexer_next(lexer_t *lexer)
         case '\n':
         case ' ':
             return lexer_next(lexer);
+        case '#':
+            c = lexer->code[lexer->index];
+            lexer->index += 1;
+            switch (c) {
+                case 'V':
+                case 'v':
+                    return TOKEN_SHARP_V;
+                default:
+                    fprintf(stderr, "#%c:未定义的词法元素", c);
+                    exit(EXIT_FAILURE);
+            }
+            break;
         case '(': return TOKEN_LP;
         case ')': return TOKEN_RP;
         default:

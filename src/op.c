@@ -83,6 +83,9 @@ op_print(op_t *op, FILE *out)
         case OP_LABEL:
             fprintf(out, "%s:", OP_LABEL_NAME(op));
             break;
+        case OP_MKVEC:
+            fprintf(out, " %d", OP_MKVEC_LENGTH(op));
+            break;
         case OP_REF:
             fprintf(out, " %"PRIiPTR" %"PRIiPTR" ; %s", OP_REF_X(op), OP_REF_Y(op), OP_REF_NAME(op));
             break;

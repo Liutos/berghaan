@@ -115,6 +115,22 @@ ast_prog_print(ast_t *p, FILE *out)
 }
 
 static void
+ast_sharp_v_print(ast_t *sv, FILE *out)
+{
+    assert(sv->type == AST_SHARP_V);
+    fprintf(out, "#v");
+    ast_print(AST_SHARP_V_ELEMENTS(sv), out);
+}
+
+static void
+ast_sharp_v_dfs(ast_t *sv)
+{
+    assert(sv->type == AST_SHARP_V);
+    printf("#v");
+    ast_dfs(AST_SHARP_V_ELEMENTS(sv));
+}
+
+static void
 ast_symbol_print(ast_t *s, FILE *out)
 {
     assert(s->type == AST_SYMBOL);
@@ -216,6 +232,14 @@ ast_prog_new(ast_t *exprs)
 }
 
 ast_t *
+ast_sharp_v_new(ast_t *elements)
+{
+    ast_t *sv = ast_new(AST_SHARP_V);
+    AST_SHARP_V_ELEMENTS(sv) = elements;
+    return sv;
+}
+
+ast_t *
 ast_symbol_new(const char *name)
 {
     ast_t *s = ast_new(AST_SYMBOL);
@@ -259,6 +283,9 @@ ast_dfs(ast_t *x)
         case AST_PROG:
             ast_prog_dfs(x);
             break;
+        case AST_SHARP_V:
+            ast_sharp_v_dfs(x);
+            break;
         case AST_SYMBOL:
             ast_symbol_dfs(x);
             break;
@@ -286,6 +313,9 @@ ast_print(ast_t *x, FILE *out)
             break;
         case AST_PROG:
             ast_prog_print(x, out);
+            break;
+        case AST_SHARP_V:
+            ast_sharp_v_print(x, out);
             break;
         case AST_SYMBOL:
             ast_symbol_print(x, out);

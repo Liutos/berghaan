@@ -244,6 +244,18 @@ compiler_compile_prog(ast_t *prog, env_t *env)
 }
 
 static void
+compiler_compile_sharp_v(code_t *s, ast_t *sv, env_t *env)
+{
+    assert(sv->type == AST_SHARP_V);
+    // 从左到右编译向量中的元素
+    const ast_t *elements = AST_SHARP_V_ELEMENTS(sv);
+    compile_args(s, elements, env);
+    // 写入用于创建向量的指令
+    int length = ast_cons_length(elements);
+    emit(s, OP_NEW1(OP_MKVEC, length));
+}
+
+static void
 compiler_compile_any(code_t *s, ast_t *x, env_t *env)
 {
     switch (x->type) {
@@ -265,10 +277,14 @@ compiler_compile_any(code_t *s, ast_t *x, env_t *env)
         case AST_PROG:
             compiler_compile_prog(x, env);
             break;
+        case AST_SHARP_V:
+            compiler_compile_sharp_v(s, x, env);
+            break;
         case AST_SYMBOL:
             emit(s, OP_NEW1(OP_PUSH, object_symbol_intern(AST_SYMBOL_NAME(x))));
             break;
         default :
+            fprintf(stderr, "%d:未定义的语法类型\n", x->type);
             exit(EXIT_FAILURE);
     }
 }

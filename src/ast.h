@@ -16,6 +16,7 @@ typedef enum {
     AST_ID,
     AST_INT,
     AST_PROG,
+    AST_SHARP_V,
     AST_SYMBOL,
 } AST_TYPE_T;
 
@@ -38,6 +39,9 @@ typedef struct _ast_t {
         } prog;
         char *symbol;
         uint32_t char_value;
+        struct {
+            struct _ast_t *elements;
+        } sharp_v;
     } u;
 } ast_t;
 
@@ -51,6 +55,7 @@ typedef struct _ast_t {
 #define AST_ID_NAME(x) ((x)->u.id)
 #define AST_INT_VALUE(x) ((x)->u.integer)
 #define AST_PROG_EXPRS(x) ((x)->u.prog.exprs)
+#define AST_SHARP_V_ELEMENTS(x) ((x)->u.sharp_v.elements)
 #define AST_SYMBOL_NAME(x) ((x)->u.symbol)
 
 extern ast_t *ast_bool_new(bool);
@@ -61,6 +66,7 @@ extern ast_t *ast_cons_new(ast_t *, ast_t *);
 extern ast_t *ast_id_new(const char *);
 extern ast_t *ast_int_new(int);
 extern ast_t *ast_prog_new(ast_t *);
+extern ast_t *ast_sharp_v_new(ast_t *);
 extern ast_t *ast_symbol_new(const char *);
 extern int ast_cons_length(ast_t *);
 extern void ast_dfs(ast_t *);

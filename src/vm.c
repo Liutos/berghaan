@@ -185,6 +185,17 @@ vm_execute(vm_t *vm, vector_t *code)
             case OP_JUMP:
                 pc = OP_ARG0(op);
                 break;
+            case OP_MKVEC:
+                obj = object_vector_new();
+                object_vector_reserve(obj, OP_MKVEC_LENGTH(op));
+                for (int i = OP_MKVEC_LENGTH(op) - 1; i >= 0; i--) {
+                    object_t *element = vm_last_data(vm);
+                    vm_pop_data(vm);
+                    object_vector_set(obj, i, element);
+                }
+                obj->u.vector->length = OP_MKVEC_LENGTH(op);
+                vm_push_data(vm, obj);
+                NEXT;
             case OP_NIL:
                 vm_push_data(vm, object_nil_new());
                 NEXT;

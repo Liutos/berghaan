@@ -13,6 +13,7 @@ typedef enum {
     TOKEN_INT,
     TOKEN_LP,
     TOKEN_RP,
+    TOKEN_SHARP_V,
     TOKEN_SYMBOL,
 } TOKEN_T;
 

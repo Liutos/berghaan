@@ -210,3 +210,17 @@ object_print(object_t *x)
             break;
     }
 }
+
+void
+object_vector_reserve(object_t *v, size_t length)
+{
+    assert(v->type == OBJECT_VECTOR);
+    vector_reserve(v->u.vector, length);
+}
+
+void
+object_vector_set(object_t *v, size_t index, object_t *element)
+{
+    assert(v->type == OBJECT_VECTOR);
+    vector_set(v->u.vector, index, (void *)element);
+}

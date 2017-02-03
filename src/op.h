@@ -19,6 +19,7 @@
     op(OP_HALT), \
     op(OP_JUMP), \
     op(OP_LABEL), \
+    op(OP_MKVEC), \
     op(OP_NIL), \
     op(OP_POP), \
     op(OP_PRINT), \
@@ -75,5 +76,6 @@ extern op_t *code_at(code_t *, size_t);
 #define OP_REF_Y(x) OP_ARG1(x)
 #define OP_REF_NAME(x) OP_ARG2(x)
 #define OP_TJUMP_LABEL(x) ((const char *)OP_ARG0(x))
+#define OP_MKVEC_LENGTH(x) (OP_ARG0(x))
 
 #define code_new vector_new
