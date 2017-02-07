@@ -95,6 +95,18 @@ bif_make_map(vm_t *vm)
 }
 
 static object_t *
+bif_make_string(vm_t *vm, object_t *content)
+{
+    EXPECT_TYPE(vm, content, OBJECT_VECTOR);
+    vector_t *dest = vector_new();
+    vector_t *src = content->u.vector;
+    for (int i = 0; i < src->length; i++) {
+        vector_push_back(dest, vector_at(src, i));
+    }
+    return object_string_new(dest);
+}
+
+static object_t *
 bif_make_vector(vm_t *vm)
 {
     return object_vector_new();
@@ -152,6 +164,7 @@ bif_init(env_t **env, vector_t **vec)
             { .name = "code-char", .impl = (void *)bif_code2char, .arity = 1 },
             { .name = "eq", .impl = (void *)bif_eq, .arity = 2 },
             { .name = "make-map", .impl = (void *)bif_make_map, .arity = 0 },
+            { .name = "make-string", .impl = (void *)bif_make_string, .arity = 1 },
             { .name = "make-vector", .impl = (void *)bif_make_vector, .arity = 0 },
             { .name = "map-get", .impl = (void *)bif_map_get, .arity = 2 },
             { .name = "map-set", .impl = (void *)bif_map_set, .arity = 3 },

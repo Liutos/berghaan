@@ -1,0 +1,4 @@
+(set v (make-vector))
+(vector-push v '你')
+(vector-push v '好')
+(make-string v)

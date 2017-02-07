@@ -59,6 +59,19 @@ object_nil_print(object_t *n)
 }
 
 static void
+object_string_print(const object_t *s)
+{
+    assert(s->type == OBJECT_STRING);
+    printf("\"");
+    vector_t *content = OBJECT_STRING_CONTENT(s);
+    for (int i = 0; i < content->length; i++) {
+        object_t *c = vector_at(content, i);
+        utf8_fprintf(stdout, OBJECT_CHAR_VALUE(c));
+    }
+    printf("\"");
+}
+
+static void
 object_symbol_print(object_t *s)
 {
     assert(s->type == OBJECT_SYMBOL);
@@ -151,6 +164,14 @@ object_nil_new(void)
 }
 
 object_t *
+object_string_new(vector_t *content)
+{
+    object_t *s = object_new(OBJECT_STRING);
+    OBJECT_STRING_CONTENT(s) = content;
+    return s;
+}
+
+object_t *
 object_symbol_new(const char *name)
 {
     object_t *s = object_new(OBJECT_SYMBOL);
@@ -201,6 +222,9 @@ object_print(object_t *x)
             break;
         case OBJECT_NIL:
             object_nil_print(x);
+            break;
+        case OBJECT_STRING:
+            object_string_print(x);
             break;
         case OBJECT_SYMBOL:
             object_symbol_print(x);
