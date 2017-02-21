@@ -73,3 +73,65 @@ The operator `fun` is similar to the famous `lambda`, it's used for creating a f
 ```
 
 The expression above return value `1`
+
+## Built-in Functions
+
+### +
+
+Plus two arguments and return their sum
+
+### -
+
+Returns the difference of two arguments
+
+### *
+
+Returns the product of two arguments
+
+### /
+
+Returns the quotient of two arguments
+
+### char-code
+
+Returns the number of code point of a character in encoding UTF-8
+
+### code-char
+
+Returns a character whose code point equals to a integer argument in encoding UTF-8
+
+### eq
+
+Returns `true` if the two arguments are identical
+
+### make-map
+
+Creates a new instance of type map and returns it
+
+### make-string
+
+Creates a string contains the same characters from a vector type argument
+
+### make-vector
+
+Createa an empty vector
+
+### map-get
+
+Search and return the target element stored in a map with specific key
+
+### map-set
+
+Store a value into a map under the specific key
+
+### vector-is-empty?
+
+Returns `true` if the argument as a vector contains no elements
+
+### vector-pop
+
+Remove the element at the tail of a vector and returns it
+
+### vector-push
+
+Store a value at the tail of a vector
