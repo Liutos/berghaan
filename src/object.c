@@ -1,3 +1,4 @@
+#include "base/string.h"
 #include "base/utf8.h"
 #include "base/vector.h"
 #include "object.h"
@@ -247,4 +248,23 @@ object_vector_set(object_t *v, size_t index, object_t *element)
 {
     assert(v->type == OBJECT_VECTOR);
     vector_set(v->u.vector, index, (void *)element);
+}
+
+char *
+object_string_to_chars(object_t *string)
+{
+    assert(string->type == OBJECT_STRING);
+    vector_t *content = OBJECT_STRING_CONTENT(string);
+    size_t length = content->length;
+    string_t *cs = string_new();
+    for (size_t i = 0; i < length; i++) {
+        object_t *c = vector_at(content, i);
+        uint8_t bytes[8] = { 0 };
+        size_t length;
+        utf8_code_to_bytes(OBJECT_CHAR_VALUE(c), bytes, &length);
+        for (size_t i = 0; i < length; i++) {
+            string_push_back(cs, bytes[i]);
+        }
+    }
+    return cs->data;
 }

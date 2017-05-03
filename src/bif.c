@@ -89,6 +89,15 @@ bif_eq(vm_t *vm, object_t *x, object_t *y)
 }
 
 static object_t *
+bif_error(vm_t *vm, object_t *msg)
+{
+    EXPECT_TYPE(vm, msg, OBJECT_STRING);
+    vm->erroneous = true;
+    vm->error = error_new(__func__, object_string_to_chars(msg));
+    return NULL;
+}
+
+static object_t *
 bif_make_map(vm_t *vm)
 {
     return object_map_new();
@@ -163,6 +172,7 @@ bif_init(env_t **env, vector_t **vec)
             { .name = "char-code", .impl = (void *)bif_char2code, .arity = 1 },
             { .name = "code-char", .impl = (void *)bif_code2char, .arity = 1 },
             { .name = "eq", .impl = (void *)bif_eq, .arity = 2 },
+            { .name = "error", .impl = (void *)bif_error, .arity = 1 },
             { .name = "make-map", .impl = (void *)bif_make_map, .arity = 0 },
             { .name = "make-string", .impl = (void *)bif_make_string, .arity = 1 },
             { .name = "make-vector", .impl = (void *)bif_make_vector, .arity = 0 },

@@ -75,3 +75,4 @@ extern object_t *object_vector_new(void);
 extern void object_print(object_t *);
 extern void object_vector_reserve(object_t *, size_t);
 extern void object_vector_set(object_t *, size_t, object_t *);
+extern char *object_string_to_chars(object_t *);

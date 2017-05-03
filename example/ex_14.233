@@ -1,0 +1,3 @@
+(set v (make-vector))
+(vector-push v '你')
+(error (make-string v))
