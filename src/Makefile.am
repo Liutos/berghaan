@@ -19,4 +19,4 @@ main_SOURCES = \
     parser.c \
     store.c \
     vm.c
-main_CFLAGS = -Wall -Wextra -g -march=native -std=gnu99
+CFLAGS = -O0 -Wall -Wextra -g -march=native -std=gnu99
