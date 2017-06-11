@@ -14,6 +14,7 @@ typedef enum {
     TOKEN_LP,
     TOKEN_RP,
     TOKEN_SHARP_V,
+    TOKEN_STRING,
     TOKEN_SYMBOL,
 } TOKEN_T;
 

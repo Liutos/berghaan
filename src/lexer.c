@@ -69,6 +69,26 @@ lexer_next_id(lexer_t *lexer)
     return TOKEN_ID;
 }
 
+static TOKEN_T
+lexer_next_string(lexer_t *lexer)
+{
+    string_clear(lexer->token);
+    char c = lexer->code[lexer->index];
+    while (!is_end(c) && c != '"') {
+        if (c == '\\') {
+            c = lexer->code[lexer->index];
+            lexer->index += 1;
+        }
+        string_push_back(lexer->token, c);
+        lexer->index += 1;
+        c = lexer->code[lexer->index];
+    }
+    if (!is_end(c)) {
+        lexer->index += 1;
+    }
+    return TOKEN_STRING;
+}
+
 lexer_t *
 lexer_new(const char *string)
 {
@@ -105,6 +125,7 @@ lexer_next(lexer_t *lexer)
                     exit(EXIT_FAILURE);
             }
             break;
+        case '"': return lexer_next_string(lexer);
         case '(': return TOKEN_LP;
         case ')': return TOKEN_RP;
         default:

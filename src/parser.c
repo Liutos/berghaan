@@ -19,7 +19,7 @@ static ast_t *sharp_v(parser_t *);
 static bool
 is_atom(TOKEN_T token)
 {
-    return token == TOKEN_BOOL || token == TOKEN_CHAR || token == TOKEN_ID || token == TOKEN_INT || token == TOKEN_SYMBOL;
+    return token == TOKEN_BOOL || token == TOKEN_CHAR || token == TOKEN_ID || token == TOKEN_INT || token == TOKEN_STRING || token == TOKEN_SYMBOL;
 }
 
 static char *
@@ -34,6 +34,13 @@ parser_match(parser_t *parser, TOKEN_T type)
         log_lprintf(LOG_DEBUG, "DISMATCH '%s'\n", lexer->token->data);
         exit(EXIT_FAILURE);
     }
+}
+
+static ast_t *
+parser_string(parser_t *parser)
+{
+    char *content = parser_match(parser, TOKEN_STRING);
+    return ast_string_new(content);
 }
 
 static ast_t *
@@ -75,6 +82,8 @@ expr(parser_t *parser)
         return list(parser);
     else if (token == TOKEN_SHARP_V)
         return sharp_v(parser);
+    else if (token == TOKEN_STRING)
+        return parser_string(parser);
     else if (token == TOKEN_SYMBOL) {
         char *n = parser_match(parser, TOKEN_SYMBOL);
         return ast_symbol_new(n + 1);

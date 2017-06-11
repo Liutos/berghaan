@@ -1,5 +1,6 @@
 #include "ast.h"
 #include "base/list.h"
+#include "base/string.h"
 #include "base/utils.h"
 #include "base/utf8.h"
 #include "base/vector.h"
@@ -131,6 +132,24 @@ ast_sharp_v_dfs(ast_t *sv)
 }
 
 static void
+ast_string_print(ast_t *s, FILE *out)
+{
+    assert(s->type == AST_STRING);
+    fprintf(out, "\"");
+    string_t *content = AST_STRING_CONTENT(s);
+    size_t length;
+    uint32_t *codes = utf8_from_chars(content->data, content->length, &length);
+    utf8_mfprintf(out, codes, length);
+    fprintf(out, "\"");
+}
+
+static void
+ast_string_dfs(ast_t *s)
+{
+    ast_string_print(s, stdout);
+}
+
+static void
 ast_symbol_print(ast_t *s, FILE *out)
 {
     assert(s->type == AST_SYMBOL);
@@ -240,6 +259,20 @@ ast_sharp_v_new(ast_t *elements)
 }
 
 ast_t *
+ast_string_new(const char *text)
+{
+    ast_t *s = ast_new(AST_STRING);
+    string_t *content = string_new();
+    uint32_t codes[256] = { 0 };
+    size_t length = utf8_msread(text, codes);
+    for (size_t i = 0; i < length; i++) {
+        string_push_back(content, codes[i]);
+    }
+    AST_STRING_CONTENT(s) = content;
+    return s;
+}
+
+ast_t *
 ast_symbol_new(const char *name)
 {
     ast_t *s = ast_new(AST_SYMBOL);
@@ -286,6 +319,9 @@ ast_dfs(ast_t *x)
         case AST_SHARP_V:
             ast_sharp_v_dfs(x);
             break;
+        case AST_STRING:
+            ast_string_dfs(x);
+            break;
         case AST_SYMBOL:
             ast_symbol_dfs(x);
             break;
@@ -316,6 +352,9 @@ ast_print(ast_t *x, FILE *out)
             break;
         case AST_SHARP_V:
             ast_sharp_v_print(x, out);
+            break;
+        case AST_STRING:
+            ast_string_print(x, out);
             break;
         case AST_SYMBOL:
             ast_symbol_print(x, out);

@@ -1,6 +1,7 @@
 #include "utf8.h"
 
 #include <ctype.h>
+#include <stdlib.h>
 
 static unsigned int MASKS[] = {
     0x1F,
@@ -19,6 +20,21 @@ bitwise_count1(uint8_t byte)
         byte = byte << 1;
     }
     return count;
+}
+
+size_t
+utf8_msread(const char *src, uint32_t *dest)
+{
+    size_t index = 0;
+    uint32_t code;
+    unsigned int nbytes;
+    while (*src != '\0') {
+        code = utf8_sread(src, &nbytes);
+        dest[index] = code;
+        index += 1;
+        src += nbytes;
+    }
+    return index;
 }
 
 uint32_t
@@ -44,8 +60,10 @@ uint32_t
 utf8_sread(const char *in, unsigned int *nbytes)
 {
     uint8_t byte1 = *in++;
-    if (isascii(byte1))
+    if (isascii(byte1)) {
+        *nbytes = 1;
         return byte1;
+    }
     unsigned int length = bitwise_count1(byte1);
     unsigned int mask = MASKS[length - 2];
     uint32_t code = byte1 & mask;
@@ -111,4 +129,23 @@ utf8_fprintf(FILE *out, uint32_t c)
     // 倒序输出bs中的字节
     for (int i = n; i >= 0; i--)
         fwrite(&bs[i], sizeof(uint8_t), 1, out);
+}
+
+void
+utf8_mfprintf(FILE *out, uint32_t *codes, size_t size)
+{
+    for (size_t i = 0; i < size; i++) {
+        utf8_fprintf(out, codes[i]);
+    }
+}
+
+uint32_t *
+utf8_from_chars(const char *src, size_t size, size_t *length)
+{
+    uint32_t *codes = (uint32_t *)calloc(size, sizeof(uint32_t));
+    for (size_t i = 0; i < size; i++) {
+        codes[i] = src[i];
+    }
+    *length = size;
+    return codes;
 }
