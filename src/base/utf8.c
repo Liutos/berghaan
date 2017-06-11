@@ -84,7 +84,7 @@ utf8_code_to_bytes(uint32_t c, uint8_t *bytes, size_t *length)
     // 倒序输出bs中的字节
     for (int i = n; i >= 0; i--)
         bytes[n - i] = bs[i];
-    *length = n;
+    *length = n + 1;
 }
 
 void
