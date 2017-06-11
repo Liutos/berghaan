@@ -19,11 +19,9 @@ main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
     // 读取标准输入
     string_t *s = string_new();
     char part[256] = {0};
-    FILE *input = fopen("../example/ex_15.233", "r");
-    while (fgets(part, sizeof(part), input) != NULL) {
+    while (fgets(part, sizeof(part), stdin) != NULL) {
         string_append(s, part);
     }
-    fclose(input);
     const char *code = s->data;
 
     lexer_t *lexer = lexer_new(code);

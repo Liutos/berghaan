@@ -256,6 +256,21 @@ compiler_compile_sharp_v(code_t *s, ast_t *sv, env_t *env)
 }
 
 static void
+compiler_compile_string(code_t *s, ast_t *str, env_t *env)
+{
+    assert(str->type == AST_STRING);
+    string_t *content = AST_STRING_CONTENT(str);
+    size_t length;
+    uint32_t *codes = utf8_from_chars(content->data, content->length, &length);
+    vector_t *v = vector_new();
+    for (size_t i = 0; i < length; i++) {
+        vector_push_back(v, object_char_new(codes[i]));
+    }
+    object_t *so = object_string_new(v);
+    emit(s, OP_NEW1(OP_PUSH, so));
+}
+
+static void
 compiler_compile_any(code_t *s, ast_t *x, env_t *env)
 {
     switch (x->type) {
@@ -279,6 +294,9 @@ compiler_compile_any(code_t *s, ast_t *x, env_t *env)
             break;
         case AST_SHARP_V:
             compiler_compile_sharp_v(s, x, env);
+            break;
+        case AST_STRING:
+            compiler_compile_string(s, x, env);
             break;
         case AST_SYMBOL:
             emit(s, OP_NEW1(OP_PUSH, object_symbol_intern(AST_SYMBOL_NAME(x))));
