@@ -11,10 +11,10 @@
 #include <string.h>
 #include <syslog.h>
 
-static ast_t *expr_list(parser_t *);
-static ast_t *expr(parser_t *);
-static ast_t *list(parser_t *);
-static ast_t *sharp_v(parser_t *);
+static PARSE_RESULT expr_list(parser_t *, ast_t **);
+static PARSE_RESULT expr(parser_t *, ast_t **);
+static PARSE_RESULT list(parser_t *, ast_t **);
+static PARSE_RESULT sharp_v(parser_t *, ast_t **);
 
 static bool
 is_atom(TOKEN_T token)
@@ -36,69 +36,84 @@ parser_match(parser_t *parser, TOKEN_T type)
     }
 }
 
-static ast_t *
-parser_string(parser_t *parser)
+static PARSE_RESULT
+parser_string(parser_t *parser, ast_t **result)
 {
     char *content = parser_match(parser, TOKEN_STRING);
-    return ast_string_new(content);
+    *result = ast_string_new(content);
+    return SUCCEED;
 }
 
-static ast_t *
-expr_list(parser_t *parser)
+static PARSE_RESULT
+expr_list(parser_t *parser, ast_t **exprs)
 {
     TOKEN_T token = lexer_peek(parser->lexer);
     if (is_atom(token)
         || token == TOKEN_LP
         || token == TOKEN_SHARP_V) {
-        ast_t *e = expr(parser);
-        ast_t *el = expr_list(parser);
-        return ast_cons_new(e, el);
+        ast_t *e, *el;
+        if (expr(parser, &e) == FAIL)
+            return FAIL;
+        if (expr_list(parser, &el) == FAIL)
+            return FAIL;
+        *exprs = ast_cons_new(e, el);
+        return SUCCEED;
     } else if (token == TOKEN_RP
-               || token == TOKEN_END)
-        return NULL;
-    else
-        exit(EXIT_FAILURE);
+               || token == TOKEN_END) {
+        *exprs = NULL;
+        return SUCCEED;
+    } else
+        return FAIL;
 }
 
-static ast_t *
-expr(parser_t *parser)
+static PARSE_RESULT
+expr(parser_t *parser, ast_t **result)
 {
     TOKEN_T token = lexer_peek(parser->lexer);
     if (token == TOKEN_BOOL) {
         char *text = parser_match(parser, TOKEN_BOOL);
-        return ast_bool_new(strcmp(text, "true") == 0);
+        *result = ast_bool_new(strcmp(text, "true") == 0);
+        return SUCCEED;
     } if (token == TOKEN_CHAR) {
         char *text = parser_match(parser, TOKEN_CHAR);
         uint32_t value = utf8_sread(&text[1], NULL);
-        return ast_char_new(value);
+        *result = ast_char_new(value);
+        return SUCCEED;
     } if (token == TOKEN_ID) {
         char *name = parser_match(parser, TOKEN_ID);
-        return ast_id_new(name);
+        *result = ast_id_new(name);
+        return SUCCEED;
     } else if (token == TOKEN_INT) {
         char *n = parser_match(parser, TOKEN_INT);
         int value = atoi(n);
-        return ast_int_new(value);
+        *result = ast_int_new(value);
+        return SUCCEED;
     } else if (token == TOKEN_LP)
-        return list(parser);
+        return list(parser, result);
     else if (token == TOKEN_SHARP_V)
-        return sharp_v(parser);
+        return sharp_v(parser, result);
     else if (token == TOKEN_STRING)
-        return parser_string(parser);
+        return parser_string(parser, result);
     else if (token == TOKEN_SYMBOL) {
         char *n = parser_match(parser, TOKEN_SYMBOL);
-        return ast_symbol_new(n + 1);
+        *result = ast_symbol_new(n + 1);
+        return SUCCEED;
     }
-    exit(EXIT_FAILURE);
+    return FAIL;
 }
 
-static ast_t *
-list(parser_t *parser)
+static PARSE_RESULT
+list(parser_t *parser, ast_t **result)
 {
     parser_match(parser, TOKEN_LP);
-    ast_t *e = expr(parser);
-    ast_t *el = expr_list(parser);
+    ast_t *e, *el;
+    if (expr(parser, &e) == FAIL)
+        return FAIL;
+    if (expr_list(parser, &el) == FAIL)
+        return FAIL;
     parser_match(parser, TOKEN_RP);
-    return ast_cons_new(e, el);
+    *result = ast_cons_new(e, el);
+    return SUCCEED;
 }
 
 parser_t *
@@ -109,23 +124,31 @@ parser_new(lexer_t *lexer)
     return parser;
 }
 
-ast_t *
-program(parser_t *parser)
+PARSE_RESULT
+program(parser_t *parser, ast_t **result)
 {
     TOKEN_T token = lexer_peek(parser->lexer);
     if (is_atom(token)
         || token == TOKEN_LP
         || token == TOKEN_END
-        || token == TOKEN_SHARP_V)
-        return ast_prog_new(expr_list(parser));
-    else
-        exit(EXIT_FAILURE);
+        || token == TOKEN_SHARP_V) {
+        ast_t *exprs;
+        PARSE_RESULT status = expr_list(parser, &exprs);
+        if (status == FAIL)
+            return status;
+        *result = ast_prog_new(exprs);
+        return SUCCEED;
+    } else
+        return FAIL;
 }
 
-ast_t *
-sharp_v(parser_t *parser)
+PARSE_RESULT
+sharp_v(parser_t *parser, ast_t **result)
 {
     parser_match(parser, TOKEN_SHARP_V);
-    ast_t *elements = list(parser);
-    return ast_sharp_v_new(elements);
+    ast_t *elements;
+    if (list(parser, &elements) == FAIL)
+        return FAIL;
+    *result = ast_sharp_v_new(elements);
+    return SUCCEED;
 }

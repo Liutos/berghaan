@@ -6,9 +6,14 @@
 #include "ast.h"
 #include "lexer.h"
 
+typedef enum {
+    FAIL,
+    SUCCEED,
+} PARSE_RESULT;
+
 typedef struct {
     lexer_t *lexer;
 } parser_t;
 
 extern parser_t *parser_new(lexer_t *lexer);
-extern ast_t *program(parser_t *parser);
+extern PARSE_RESULT program(parser_t *parser, ast_t **);

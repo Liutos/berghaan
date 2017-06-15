@@ -26,7 +26,11 @@ main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 
     lexer_t *lexer = lexer_new(code);
     parser_t *parser = parser_new(lexer);
-    ast_t *prog = program(parser);
+    ast_t *prog;
+    if (program(parser, &prog) == FAIL) {
+        printf("Compilation fail\n");
+        return 1;
+    }
     ast_print(prog, stdout);
     puts("");
     bif_init(&toplevel_env, &toplevel_vec);
