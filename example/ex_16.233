@@ -1,0 +1,3 @@
+(let ((servant (summon :char)))
+  (let ((skill (map-get servant :code-char)))
+    (skill 97)))

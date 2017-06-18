@@ -1,3 +1,4 @@
+#include "base/hash.h"
 #include "bif.h"
 #include "object.h"
 
@@ -7,6 +8,7 @@
 
 typedef struct {
     char *name;
+    char *owner;
     void *impl;
     int arity;
 } bif_t;
@@ -22,6 +24,8 @@ typedef struct {
             return NULL; \
         } \
     } while (0)
+
+static hash_table_t *servants = NULL;
 
 static object_t *
 bif_add(vm_t *vm, object_t *lhs, object_t *rhs)
@@ -109,7 +113,7 @@ bif_make_string(vm_t *vm, object_t *content)
     EXPECT_TYPE(vm, content, OBJECT_VECTOR);
     vector_t *dest = vector_new();
     vector_t *src = content->u.vector;
-    for (int i = 0; i < src->length; i++) {
+    for (size_t i = 0; i < src->length; i++) {
         vector_push_back(dest, vector_at(src, i));
     }
     return object_string_new(dest);
@@ -137,6 +141,16 @@ bif_map_set(vm_t *vm, object_t *map, object_t *key, object_t *value)
 }
 
 static object_t *
+bif_summon(vm_t *vm, object_t *name)
+{
+    EXPECT_TYPE(vm, name, OBJECT_SYMBOL);
+    object_t *servant = (object_t *)hash_table_get(servants, (void *)name);
+    if (servant)
+        return servant;
+    return object_nil_new();
+}
+
+static object_t *
 bif_vector_is_empty(vm_t *vm, object_t *vector)
 {
     EXPECT_TYPE(vm, vector, OBJECT_VECTOR);
@@ -160,27 +174,54 @@ bif_vector_push_back(vm_t *vm, object_t *vector, object_t *value)
     return vector;
 }
 
+static object_t *
+servant_ensure_exist(const char *name)
+{
+    object_t *servant_name = object_symbol_intern(name);
+    object_t *servant = hash_table_get(servants, (void *)servant_name);
+    if (servant == NULL) {
+        servant = object_map_new();
+        hash_table_set(servants, (void *)servant_name, servant);
+    }
+    return servant;
+}
+
+static void
+servant_init(void)
+{
+    servants = hash_table_new(hash_pointer_equal, hash_pointer_hash);
+}
+
+static void
+servant_learn(object_t *servant, const char *name, object_t *skill)
+{
+    assert(servant->type == OBJECT_MAP);
+    hash_table_set(servant->u.map, (void *)object_symbol_intern(name), (void *)skill);
+}
+
 void
 bif_init(env_t **env, vector_t **vec)
 {
+    servant_init();
     bif_t bif[] = {
-            { .name = "+", .impl = (void *)bif_add, .arity = 2 },
-            { .name = "-", .impl = (void *)bif_sub, .arity = 2 },
-            { .name = "*", .impl = (void *)bif_mul, .arity = 2 },
-            { .name = "/", .impl = (void *)bif_div, .arity = 2 },
-            { .name = "=", .impl = (void *)bif_equal, .arity = 2 },
-            { .name = "char-code", .impl = (void *)bif_char2code, .arity = 1 },
-            { .name = "code-char", .impl = (void *)bif_code2char, .arity = 1 },
-            { .name = "eq", .impl = (void *)bif_eq, .arity = 2 },
-            { .name = "error", .impl = (void *)bif_error, .arity = 1 },
-            { .name = "make-map", .impl = (void *)bif_make_map, .arity = 0 },
-            { .name = "make-string", .impl = (void *)bif_make_string, .arity = 1 },
-            { .name = "make-vector", .impl = (void *)bif_make_vector, .arity = 0 },
-            { .name = "map-get", .impl = (void *)bif_map_get, .arity = 2 },
-            { .name = "map-set", .impl = (void *)bif_map_set, .arity = 3 },
-            { .name = "vector-is-empty?", .impl = (void *)bif_vector_is_empty, .arity = 1 },
-            { .name = "vector-pop", .impl = (void *)bif_vector_pop_back, .arity = 1 },
-            { .name = "vector-push", .impl = (void *)bif_vector_push_back, .arity = 2 },
+            { .name = "+", .owner = NULL, .impl = (void *)bif_add, .arity = 2 },
+            { .name = "-", .owner = NULL, .impl = (void *)bif_sub, .arity = 2 },
+            { .name = "*", .owner = NULL, .impl = (void *)bif_mul, .arity = 2 },
+            { .name = "/", .owner = NULL, .impl = (void *)bif_div, .arity = 2 },
+            { .name = "=", .owner = NULL, .impl = (void *)bif_equal, .arity = 2 },
+            { .name = "char-code", .owner = "char", .impl = (void *)bif_char2code, .arity = 1 },
+            { .name = "code-char", .owner = "char", .impl = (void *)bif_code2char, .arity = 1 },
+            { .name = "eq", .owner = NULL, .impl = (void *)bif_eq, .arity = 2 },
+            { .name = "error", .owner = NULL, .impl = (void *)bif_error, .arity = 1 },
+            { .name = "make-map", .owner = "map", .impl = (void *)bif_make_map, .arity = 0 },
+            { .name = "make-string", .owner = "string", .impl = (void *)bif_make_string, .arity = 1 },
+            { .name = "make-vector", .owner = "vector", .impl = (void *)bif_make_vector, .arity = 0 },
+            { .name = "map-get", .owner = "map", .impl = (void *)bif_map_get, .arity = 2 },
+            { .name = "map-set", .owner = "map", .impl = (void *)bif_map_set, .arity = 3 },
+            { .name = "summon", .owner = NULL, .impl = (void *)bif_summon, .arity = 1 },
+            { .name = "vector-is-empty?", .owner = "vector", .impl = (void *)bif_vector_is_empty, .arity = 1 },
+            { .name = "vector-pop", .owner = "vector", .impl = (void *)bif_vector_pop_back, .arity = 1 },
+            { .name = "vector-push", .owner = "vector", .impl = (void *)bif_vector_push_back, .arity = 2 },
     };
     int len = sizeof(bif) / sizeof(*bif);
     // 初始化编译器环境
@@ -195,6 +236,10 @@ bif_init(env_t **env, vector_t **vec)
     for (int i = 0; i < len; i++) {
         object_t *f = object_fun_native_new(bif[i].arity, bif[i].impl);
         vector_push_back(_vec, f);
+        if (bif[i].owner != NULL) {
+            object_t *servant = servant_ensure_exist(bif[i].owner);
+            servant_learn(servant, bif[i].name, f);
+        }
     }
     *env = _env;
     *vec = _vec;
