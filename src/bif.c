@@ -141,6 +141,15 @@ bif_map_set(vm_t *vm, object_t *map, object_t *key, object_t *value)
 }
 
 static object_t *
+bif_oblate(vm_t *vm, object_t *name, object_t *servant)
+{
+    EXPECT_TYPE(vm, name, OBJECT_SYMBOL);
+    EXPECT_TYPE(vm, servant, OBJECT_MAP);
+    hash_table_set(servants, (void *)name, (void *)servant);
+    return servant;
+}
+
+static object_t *
 bif_summon(vm_t *vm, object_t *name)
 {
     EXPECT_TYPE(vm, name, OBJECT_SYMBOL);
@@ -218,6 +227,7 @@ bif_init(env_t **env, vector_t **vec)
             { .name = "make-vector", .owner = "vector", .impl = (void *)bif_make_vector, .arity = 0 },
             { .name = "map-get", .owner = "map", .impl = (void *)bif_map_get, .arity = 2 },
             { .name = "map-set", .owner = "map", .impl = (void *)bif_map_set, .arity = 3 },
+            { .name = "oblate", .owner = NULL, .impl = (void *)bif_oblate, .arity = 2 },
             { .name = "summon", .owner = NULL, .impl = (void *)bif_summon, .arity = 1 },
             { .name = "vector-is-empty?", .owner = "vector", .impl = (void *)bif_vector_is_empty, .arity = 1 },
             { .name = "vector-pop", .owner = "vector", .impl = (void *)bif_vector_pop_back, .arity = 1 },

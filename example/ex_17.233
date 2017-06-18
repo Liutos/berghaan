@@ -1,0 +1,9 @@
+(set math (make-map))
+
+(map-set math :+1 (fun (x) (+ x 1)))
+
+(oblate :math math)
+
+(let ((servant (summon :math)))
+  (let ((skill (map-get servant :+1)))
+    (skill 2)))
