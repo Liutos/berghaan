@@ -124,6 +124,10 @@ Search and return the target element stored in a map with specific key
 
 Store a value into a map under the specific key
 
+### summon
+
+Returns an instance of type map which named after parameter. This map contains some built-in functions
+
 ### vector-is-empty?
 
 Returns `true` if the argument as a vector contains no elements
