@@ -18,6 +18,7 @@ typedef enum {
     OBJECT_NIL,
     OBJECT_STRING,
     OBJECT_SYMBOL,
+    OBJECT_TYPE,
     OBJECT_VECTOR,
 } OBJECT_T;
 
@@ -48,6 +49,10 @@ typedef struct {
         char *symbol;
         vector_t *vector;
         vector_t *content;
+        struct {
+            OBJECT_T type_id;
+            char *name;
+        } type;
     } u;
 } object_t;
 
@@ -60,6 +65,8 @@ typedef struct {
 #define OBJECT_INT_VALUE(x) ((x)->u.integer)
 #define OBJECT_STRING_CONTENT(x) ((x)->u.content)
 #define OBJECT_SYMBOL_NAME(x) ((x)->u.symbol)
+#define OBJECT_TYPE_ID(x) ((x)->u.type.type_id)
+#define OBJECT_TYPE_NAME(x) ((x)->u.type.name)
 
 extern object_t *object_bool_new(bool);
 extern object_t *object_char_new(uint32_t);
@@ -71,8 +78,10 @@ extern object_t *object_nil_new(void);
 extern object_t *object_string_new(vector_t *);
 extern object_t *object_symbol_new(const char *);
 extern object_t *object_symbol_intern(const char *);
+extern object_t *object_type_new(const OBJECT_T, const char *);
 extern object_t *object_vector_new(void);
 extern void object_print(object_t *);
 extern void object_vector_reserve(object_t *, size_t);
 extern void object_vector_set(object_t *, size_t, object_t *);
 extern char *object_string_to_chars(object_t *);
+extern object_t *object_get_type(OBJECT_T type_id);

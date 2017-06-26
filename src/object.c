@@ -10,6 +10,19 @@
 
 static hash_table_t *string_symbol_map = NULL;
 
+static object_t type_objects[] = {
+    { .type = OBJECT_TYPE, .u = { .type = { .name = "boolean", .type_id = OBJECT_BOOL, } } },
+    { .type = OBJECT_TYPE, .u = { .type = { .name = "character", .type_id = OBJECT_CHAR, } } },
+    { .type = OBJECT_TYPE, .u = { .type = { .name = "function", .type_id = OBJECT_FUN, } } },
+    { .type = OBJECT_TYPE, .u = { .type = { .name = "integer", .type_id = OBJECT_INT, } } },
+    { .type = OBJECT_TYPE, .u = { .type = { .name = "map", .type_id = OBJECT_MAP, } } },
+    { .type = OBJECT_TYPE, .u = { .type = { .name = "nil", .type_id = OBJECT_NIL, } } },
+    { .type = OBJECT_TYPE, .u = { .type = { .name = "string", .type_id = OBJECT_STRING, } } },
+    { .type = OBJECT_TYPE, .u = { .type = { .name = "symbol", .type_id = OBJECT_SYMBOL, } } },
+    { .type = OBJECT_TYPE, .u = { .type = { .name = "type", .type_id = OBJECT_TYPE, } } },
+    { .type = OBJECT_TYPE, .u = { .type = { .name = "vector", .type_id = OBJECT_VECTOR, } } },
+};
+
 static void
 object_bool_print(object_t *b)
 {
@@ -77,6 +90,13 @@ object_symbol_print(object_t *s)
 {
     assert(s->type == OBJECT_SYMBOL);
     printf(":%s", OBJECT_SYMBOL_NAME(s));
+}
+
+static void
+object_type_print(object_t *t)
+{
+    assert(t->type == OBJECT_TYPE);
+    printf("#<TYPE %d %s>", OBJECT_TYPE_ID(t), OBJECT_TYPE_NAME(t));
 }
 
 static void
@@ -230,6 +250,9 @@ object_print(object_t *x)
         case OBJECT_SYMBOL:
             object_symbol_print(x);
             break;
+        case OBJECT_TYPE:
+            object_type_print(x);
+            break;
         case OBJECT_VECTOR:
             object_vector_print(x);
             break;
@@ -267,4 +290,10 @@ object_string_to_chars(object_t *string)
         }
     }
     return cs->data;
+}
+
+object_t *
+object_get_type(OBJECT_T type_id)
+{
+    return &type_objects[type_id];
 }

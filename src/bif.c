@@ -160,6 +160,13 @@ bif_summon(vm_t *vm, object_t *name)
 }
 
 static object_t *
+bif_type_of(vm_t *vm, object_t *any)
+{
+    OBJECT_T type_id = any->type;
+    return object_get_type(type_id);
+}
+
+static object_t *
 bif_vector_is_empty(vm_t *vm, object_t *vector)
 {
     EXPECT_TYPE(vm, vector, OBJECT_VECTOR);
@@ -229,6 +236,7 @@ bif_init(env_t **env, vector_t **vec)
             { .name = "map-set", .owner = "map", .impl = (void *)bif_map_set, .arity = 3 },
             { .name = "oblate", .owner = NULL, .impl = (void *)bif_oblate, .arity = 2 },
             { .name = "summon", .owner = NULL, .impl = (void *)bif_summon, .arity = 1 },
+            { .name = "type-of", .owner = NULL, .impl = (void *)bif_type_of, .arity = 1 },
             { .name = "vector-is-empty?", .owner = "vector", .impl = (void *)bif_vector_is_empty, .arity = 1 },
             { .name = "vector-pop", .owner = "vector", .impl = (void *)bif_vector_pop_back, .arity = 1 },
             { .name = "vector-push", .owner = "vector", .impl = (void *)bif_vector_push_back, .arity = 2 },
